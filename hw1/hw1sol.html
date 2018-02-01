@@ -184,9 +184,99 @@ $(document).ready(function () {
 <li><p>How many persons are in the data set (statisticians call this <code>n</code>)? How many SNPs are in the data set (statisticians call this <code>p</code>)?</p>
 <p>There are 959 persons and 8348674 SNPs in the data set.</p>
 <pre class="bash"><code>wc -l /home/m280-data/hw1/merge-geno.fam
-wc -l /home/m280-data/hw1/merge-geno.bim</code></pre></li>
+wc -l /home/m280-data/hw1/merge-geno.bim</code></pre>
+<pre><code>## 959 /home/m280-data/hw1/merge-geno.fam
+## 8348674 /home/m280-data/hw1/merge-geno.bim</code></pre></li>
 <li><p>Which chromosomes does this data set contain? How many SNPs are in each chromosome?</p></li>
-<li><p>MAP4 (microtubule-associated protein 4) is a gene on chromosome 3 spanning positions 47,892,180 bp – 48,130,769 bp. How many SNPs are located within MAP4 gene?</p></li>
+</ol>
+<ul>
+<li><p>Chromosomes 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21 are in this data set.</p>
+<pre class="bash"><code>awk '{print $1}' /home/m280-data/hw1/merge-geno.bim | sort | uniq</code></pre>
+<pre><code>## 1
+## 11
+## 13
+## 15
+## 17
+## 19
+## 21
+## 3
+## 5
+## 7
+## 9</code></pre></li>
+<li><p>Number of SNPs in each chromosome:</p>
+<table>
+<thead>
+<tr class="header">
+<th>Chromosome</th>
+<th>Number of SNPs</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>1309299</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>1215399</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>1090185</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>980944</td>
+</tr>
+<tr class="odd">
+<td>9</td>
+<td>732013</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>815860</td>
+</tr>
+<tr class="odd">
+<td>13</td>
+<td>602809</td>
+</tr>
+<tr class="even">
+<td>15</td>
+<td>491208</td>
+</tr>
+<tr class="odd">
+<td>17</td>
+<td>477990</td>
+</tr>
+<tr class="even">
+<td>19</td>
+<td>393615</td>
+</tr>
+<tr class="odd">
+<td>21</td>
+<td>239352</td>
+</tr>
+</tbody>
+</table>
+<pre class="bash"><code>awk '{print $1}' /home/m280-data/hw1/merge-geno.bim | sort | uniq -c</code></pre>
+<pre><code>## 1309299 1
+##  815860 11
+##  602809 13
+##  491208 15
+##  477990 17
+##  393615 19
+##  239352 21
+## 1215399 3
+## 1090185 5
+##  980944 7
+##  732013 9</code></pre></li>
+</ul>
+<ol start="3" style="list-style-type: decimal">
+<li><p>MAP4 (microtubule-associated protein 4) is a gene on chromosome 3 spanning positions 47,892,180 bp – 48,130,769 bp. How many SNPs are located within MAP4 gene?</p>
+<p>There are 894 SNPs located within MAP4 gene.</p>
+<pre class="bash"><code>awk &lt; /home/m280-data/hw1/merge-geno.bim   \
+'{if ($1 == 3 &amp;&amp; $4 &gt;= 47892180 &amp;&amp; $4 &lt;= 48130769) print}'| wc -l</code></pre>
+<pre><code>## 894</code></pre></li>
 <li><p>Statistical geneticists often have to reformat a data set to feed into various analysis programs. For example, to use the Mendel software <a href="http://www.genetics.ucla.edu/software/mendel" class="uri">http://www.genetics.ucla.edu/software/mendel</a>, we have to reformat the data set to be read by Mendel.</p>
 <ul>
 <li>Mendel’s SNP definition file is similar to the plink <code>bim</code> file but has format<br />
