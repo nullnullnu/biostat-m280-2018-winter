@@ -99,11 +99,13 @@ Use Linux shell commands to answer following questions.
       `SNP ID`, `Chromosome`, `Base Pair Position`  
       with each field separated by a comma. Write a Linux shell command to convert `merge-geno.bim` to Mendel SNP definition file. The first few lines of the Mendel SNP definition file should look like
       
-      I created the Mendel SNP definition file called 'mendel.txt'.
+      - I created the Mendel SNP definition file called 'mendel_snp.txt'.
       
-    ```{bash, echo=TRUE, eval=FALSE}
-    awk '{OFS = ","} {print $1, $2, $4}' /home/m280-data/hw1/merge-geno.bim > mendel.txt
-    head -10 mendel.txt
+    ```{bash, echo=TRUE, eval=TRUE}
+    awk '{OFS = ","} BEGIN {print "2.40 = FILE FORMAT VERSION NUMBER.\n"  \
+    "8348674 = NUMBER OF SNPS LISTED HERE."} {print $1, $2, $4}'   \
+    /home/m280-data/hw1/merge-geno.bim > mendel_snp.txt
+    head -10 mendel_snp.txt
     ```
     
     - Mendel's pedigree file is similar to the plink `fam` file but has format  
