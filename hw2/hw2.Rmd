@@ -19,7 +19,8 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
 1. Explore the distribution of each of the x, y, and z variables in diamonds. What do you learn? Think about a diamond and how you might decide which dimension is the length, width, and depth.
 
     ```{r, echo=TRUE, eval=TRUE}
-    if(!require(ggplot2)) install.packages("ggplot2", repos = "http://cran.us.r-project.org")
+    if(!"ggplot2" %in% rownames(installed.packages()))
+        install.packages("ggplot2", repos = "http://cran.rstudio.com/")
     library(ggplot2)
     ```
 
