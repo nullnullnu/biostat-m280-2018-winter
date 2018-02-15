@@ -110,6 +110,7 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
 
 1. Use what you’ve learned to improve the visualisation of the departure times of cancelled vs. non-cancelled flights.
 
+
     ```{r, echo=TRUE, eval=TRUE}
     if(!"nycflights13" %in% rownames(installed.packages()))
         install.packages("nycflights13", repos = "http://cran.rstudio.com/")
