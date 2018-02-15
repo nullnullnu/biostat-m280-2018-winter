@@ -66,6 +66,25 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
     ```
 
 4. Compare and contrast coord_cartesian() vs xlim() or ylim() when zooming in on a histogram. What happens if you leave binwidth unset? What happens if you try and zoom so only half a bar shows?
+    
+    The function coord_cartesian() zooms in the area of xlim(). If I left binwidth unset the histogram does not change. 
+    ```{r, echo=TRUE, eval=TRUE}
+    ggplot(diamonds, aes(x = carat)) +
+      geom_histogram() +
+      xlim(c(0.9, 1.1))
+    
+    ggplot(diamonds, aes(x = carat)) +
+      geom_histogram() +
+      coord_cartesian(xlim = c(0.9, 1.1))
+    
+    ggplot(diamonds, aes(x = carat), binwidth = 0.01) +
+      geom_histogram() +
+      xlim(c(0.9, 1.1))
+    
+    ggplot(diamonds, aes(x = carat), binwidth = 0.01) +
+      geom_histogram() +
+      coord_cartesian(xlim = c(0.9, 1.1))
+    ```
 
 7.4.1 
 
