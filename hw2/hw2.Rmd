@@ -18,10 +18,20 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
 7.3.4 
 1. Explore the distribution of each of the x, y, and z variables in diamonds. What do you learn? Think about a diamond and how you might decide which dimension is the length, width, and depth.
 
+    The distribution of the x, y, and z variables in diamonds are right skewed, indicating that the sizes of most diamonds are small and only a few are large. 
+    
+    The distribution of the x is very similar to that of y. In my opinion, x should be the length and y should be the width since they are close but the value of x is larger (more to the right) than that of y. And z should be the depth.
     ```{r, echo=TRUE, eval=TRUE}
-    if(!"ggplot2" %in% rownames(installed.packages()))
-        install.packages("ggplot2", repos = "http://cran.rstudio.com/")
-    library(ggplot2)
+    if(!"tidyverse" %in% rownames(installed.packages()))
+        install.packages("tidyverse", repos = "http://cran.rstudio.com/")
+    library(tidyverse)
+    
+    diamonds %>%
+      select(x, y, z) %>%
+      gather(variable, value)  %>%
+      ggplot(aes(x = value)) +
+      geom_density() +
+      facet_grid(variable ~ .)
     ```
 
 2. Explore the distribution of price. Do you discover anything unusual or surprising? (Hint: Carefully think about the binwidth and make sure you try a wide range of values.)
