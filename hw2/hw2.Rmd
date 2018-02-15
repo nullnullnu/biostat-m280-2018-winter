@@ -116,7 +116,12 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
     if(!"nycflights13" %in% rownames(installed.packages()))
         install.packages("nycflights13", repos = "http://cran.rstudio.com/")
     library(nycflights13)
-
+    
+    flights %>% 
+      mutate(cancelled = is.na(dep_time) | is.na(arr_time)) %>%
+      ggplot() +
+      geom_boxplot(aes(x = cancelled, y = dep_time)) +
+      scale_x_discrete(labels = c('non-cancelled flights','cancelled flights'))
     ```
 
 2. What variable in the diamonds dataset is most important for predicting the price of a diamond? How is that variable correlated with cut? Why does the combination of those two relationships lead to lower quality diamonds being more expensive?
