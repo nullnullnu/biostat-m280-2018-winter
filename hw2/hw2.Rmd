@@ -28,13 +28,25 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
     
     diamonds %>%
       select(x, y, z) %>%
-      gather(variable, value)  %>%
+      gather(variable, value) %>%
       ggplot(aes(x = value)) +
       geom_density() +
       facet_grid(variable ~ .)
     ```
 
 2. Explore the distribution of price. Do you discover anything unusual or surprising? (Hint: Carefully think about the binwidth and make sure you try a wide range of values.)
+
+    In general, as the price of the diamonds went higher, the number of diamonds went lower.
+    
+    The number of diamonds is 0 when the price is 1500. 
+    ```{r, echo=TRUE, eval=TRUE}
+    ggplot(data = diamonds) +
+      geom_histogram(aes(x = price), binwidth = 100)
+    
+    ggplot(data = diamonds) + 
+      geom_histogram(aes(x = price), binwidth = 10) +
+      xlim(c(0, 2500))
+    ```
 
 3. How many diamonds are 0.99 carat? How many are 1 carat? What do you think is the cause of the difference?
 
