@@ -161,7 +161,6 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
     
     ggplot(diamonds) +
       geom_boxplot(aes(x = cut, y = carat))
-
     ```
 
 3. Install the ggstance package, and create a horizontal boxplot. How does this compare to using coord_flip()?
