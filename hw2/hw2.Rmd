@@ -348,6 +348,11 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
 
 4. Combine two of the techniques you’ve learned to visualise the combined distribution of cut, carat, and price.
 
+    ```{r, echo=TRUE, eval=TRUE}
+    diamonds %>%
+    ggplot(aes(cut_number(carat, 5), price)) +
+    geom_boxplot(aes(fill = cut))
+    ```
 5. Two dimensional plots reveal outliers that are not visible in one dimensional plots. For example, some points in the plot below have an unusual combination of x and y values, which makes the points outliers even though their x and y values appear normal when examined separately.
 ```{r, echo=TRUE, eval=TRUE}
   ggplot(data = diamonds) +
