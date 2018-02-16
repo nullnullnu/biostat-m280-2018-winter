@@ -193,6 +193,35 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
     ```
 
 5. Compare and contrast geom_violin() with a facetted geom_histogram(), or a coloured geom_freqpoly(). What are the pros and cons of each method?
+    
+    geom_violin(): 
+    
+    - Pros: both the width and length are shown. The way the distribution of y changes can be easily seen by the shape of the tail. The visual difference of the overall shape of the distribution is obvious.
+    
+    - Cons: the precise value of y at a category is not obvious. 
+    
+    geom_histogram(): 
+    
+    - Pros: the value of y at each point of x is more obvious. The skewness is obvious. 
+    
+    - Cons: it is hard to compare all the categories since they are not in the same plot. 
+    
+    geom_freqpoly(): 
+    
+    - Pros: it is easy to compare all the categories since they are in the same plot. The visual difference in the overall shape, skewness, etc of the distribution is obvious.
+    
+    - Cons: the precise value of y at a category is not obvious.
+    ```{r, echo=TRUE, eval=TRUE}
+    ggplot(diamonds, aes(x = clarity, y = price)) +
+      geom_violin() 
+    
+    ggplot(diamonds) +
+      geom_histogram(aes(x = price)) +
+      facet_wrap(~clarity)
+    
+    ggplot(diamonds) +
+      geom_freqpoly(aes(x = price, color = clarity))
+    ```
 
 6. If you have a small dataset, it’s sometimes useful to use geom_jitter() to see the relationship between a continuous and categorical variable. The ggbeeswarm package provides a number of methods similar to geom_jitter(). List them and briefly describe what each one does.
 
