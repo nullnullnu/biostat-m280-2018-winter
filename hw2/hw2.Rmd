@@ -334,6 +334,13 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
 
 2. Visualise the distribution of carat, partitioned by price.
 
+    ```{r, echo=TRUE, eval=TRUE}
+    ggplot(diamonds, aes(x = cut_number(price, 5), y = carat)) +
+      geom_boxplot() +
+      coord_flip() +
+      xlab("Price")
+    ```
+
 3. How does the price distribution of very large diamonds compare to small diamonds. Is it as you expect, or does it surprise you?
 
 4. Combine two of the techniques you’ve learned to visualise the combined distribution of cut, carat, and price.
