@@ -378,6 +378,9 @@ Why is a scatterplot a better display than a binned plot for this case?
 
 Redo HW1 Q2 using tidyverse.
 
+1. How many persons are in the data set (statisticians call this `n`)? How many SNPs are in the data set (statisticians call this `p`)?
+
+    There are 959 persons and 8348674 SNPs in the data set.
     ```{r, echo=TRUE, eval=TRUE}
     if(!"readr" %in% rownames(installed.packages()))
         install.packages("readr", repos = "http://cran.rstudio.com/")
@@ -386,5 +389,49 @@ Redo HW1 Q2 using tidyverse.
                     col_names = FALSE)
     fam <- read_delim(file = "/home/m280-data/hw1/merge-geno.fam",
                           delim = " ", col_names = FALSE)
+    count(fam)
+    count(bim)
     ```
+
+2. Which chromosomes does this data set contain? How many SNPs are in each chromosome?
+
+    - Chromosomes 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21 are in this data set.
+    
+    - Number of SNPs in each chromosome:
+    
+    | Chromosome | Number of SNPs |
+    |------------|----------------|
+    | 1          | 1309299        |
+    | 3          | 1215399        |
+    | 5          | 1090185        |
+    | 7          | 980944         |
+    | 9          | 732013         |
+    | 11         | 815860         |
+    | 13         | 602809         |
+    | 15         | 491208         |
+    | 17         | 477990         |
+    | 19         | 393615         |
+    | 21         | 239352         |
+    ```{r, echo=TRUE, eval=TRUE}
+    count(bim, X1)
+    ```
+
+3. MAP4 (microtubule-associated protein 4) is a gene on chromosome 3 spanning positions 47,892,180 bp -- 48,130,769 bp. How many SNPs are located within MAP4 gene?
+
+4. Statistical geneticists often have to reformat a data set to feed into various analysis programs. For example, to use the Mendel software <http://www.genetics.ucla.edu/software/mendel>, we have to reformat the data set to be read by Mendel.
+
+      - Mendel's SNP definition file is similar to the plink `bim` file but has format  
+      `SNP ID`, `Chromosome`, `Base Pair Position`  
+      with each field separated by a comma. Write a Linux shell command to convert `merge-geno.bim` to Mendel SNP definition file. The first few lines of the Mendel SNP definition file should look like
+    ```{bash, echo=FALSE, eval=TRUE}
+    head mendel_snpdef.txt
+    ```
+    
+    - Mendel's pedigree file is similar to the plink `fam` file but has format  
+    `Family ID`, `Person ID`, `Father ID`, `Mother ID`, `Sex` coded as M or F, `Twin Status`  
+    with each field separated by a comma. Write a Linux shell command to convert `merge-geno.fam` to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string `T2DG` from the IDs. First few lines of the Mendel pedigree should look like
+    ```{bash, echo=FALSE, eval=TRUE}
+    head -20 mendel_ped.txt
+    ```
+
 
