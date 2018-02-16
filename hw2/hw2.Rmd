@@ -132,7 +132,6 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
     
     It might be because the better cut make the carat lower, resulting in a lower price. 
     ```{r, echo=TRUE, eval=TRUE}
-    
     ggplot(diamonds) + 
       geom_point(aes(x = carat, y = price), alpha = 0.5)
     
@@ -197,6 +196,7 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
   geom_point(mapping = aes(x = x, y = y)) +
   coord_cartesian(xlim = c(4, 11), ylim = c(4, 11))
 ```
+
 Why is a scatterplot a better display than a binned plot for this case?
 
 ## Q3
