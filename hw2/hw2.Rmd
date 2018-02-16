@@ -323,6 +323,7 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
 
 1. Instead of summarising the conditional distribution with a boxplot, you could use a frequency polygon. What do you need to consider when using cut_width() vs cut_number()? How does that impact a visualisation of the 2d distribution of carat and price?
 
+    The function cut_width(x, width) divides x into bins of width. By default, boxplots look roughly the same (apart from number of outliers) regardless of how many observations there are, so it’s difficult to tell that each boxplot summarises a different number of points. The function cut_number() displays approximately the same number of points in each bin.
     ```{r, echo=TRUE, eval=TRUE}
     ggplot(data = diamonds, aes(x = price, colour = cut_width(carat, 0.4))) +
       geom_freqpoly()
@@ -342,6 +343,8 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
     ```
 
 3. How does the price distribution of very large diamonds compare to small diamonds. Is it as you expect, or does it surprise you?
+
+    The prices of the large diamonds are more spread out. The large diamonds are more expensive than the small diamonds when looking at the median values. It is as I expected.
 
 4. Combine two of the techniques you’ve learned to visualise the combined distribution of cut, carat, and price.
 
