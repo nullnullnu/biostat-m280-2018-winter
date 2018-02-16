@@ -288,7 +288,7 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
     - exclude missing values
     
     ```{r, echo=TRUE, eval=TRUE}
-    flights %>%
+    diaplot <- flights %>%
       group_by(month, dest) %>%
       summarise(dep_delay = mean(dep_delay, na.rm = TRUE)) %>%
       group_by(dest) %>%
@@ -299,10 +299,25 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
       geom_tile() +
       scale_fill_viridis() +
       labs(x = "Month", y = "Destination", fill = "Departure Delay")
+    diaplot
     ```
 
-
 3. Why is it slightly better to use aes(x = color, y = cut) rather than aes(x = cut, y = color) in the example above?
+
+    Because most of the time the categorical variable with fewer quantiles are on the x axis. 
+    ```{r, echo=TRUE, eval=TRUE}
+    diaplot<- diamonds %>%
+    count(color, cut) %>%
+    ggplot(aes(x = color, y = cut)) +
+    geom_tile(aes(fill = n))
+    diaplot
+    
+    diaplot <- diamonds %>%
+    count(color, cut) %>%
+    ggplot(aes(x = cut, y = color)) +
+    geom_tile(aes(fill = n))
+    diaplot
+    ```
 
 7.5.3.1 
 
