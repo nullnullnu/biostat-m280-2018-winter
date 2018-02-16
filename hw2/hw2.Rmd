@@ -242,22 +242,65 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
 
 1. How could you rescale the count dataset above to more clearly show the distribution of cut within colour, or colour within cut?
 
-
     ```{r, echo=TRUE, eval=TRUE}
     if(!"viridis" %in% rownames(installed.packages()))
       install.packages("viridis", repos = "http://cran.rstudio.com/")
     library(viridis)
+    library(tidyverse)
     
-    diamonds %>%
+    diaplot <- diamonds %>%
       count(color, cut) %>%
       group_by(color) %>%
       mutate(perc = n / sum(n)) %>%
       ggplot(aes(color, cut, fill = n)) +
       geom_tile() +
       scale_fill_viridis()
+    diaplot
     ```
 
 2. Use geom_tile() together with dplyr to explore how average flight delays vary by destination and month of year. What makes the plot difficult to read? How could you improve it?
+
+    Why difficult to read: 
+    
+    - too many destinations
+    
+    - the differences amongs colors are not distinguishable enough
+    
+    - too many missing values
+    
+    ```{r, echo=TRUE, eval=TRUE}
+    library(nycflights13)
+    diaplot <- flights %>%
+      group_by(month, dest) %>%
+      summarise(dep_delay = mean(dep_delay, na.rm = TRUE)) %>%
+      ggplot(aes(x = month, y = dest, fill = dep_delay)) +
+      geom_tile() +
+      labs(x = "Month", y = "Destination", fill = "Delay")
+    diaplot
+    ```
+    
+    How to improve: 
+    
+    - categorize the destinations
+    
+    - make the colors more distinguishable by using package viridis
+    
+    - exclude missing values
+    
+    ```{r, echo=TRUE, eval=TRUE}
+    flights %>%
+      group_by(month, dest) %>%
+      summarise(dep_delay = mean(dep_delay, na.rm = TRUE)) %>%
+      group_by(dest) %>%
+      filter(n() == 12) %>%
+      ungroup() %>%
+      mutate(dest = fct_reorder(dest, dep_delay)) %>%
+      ggplot(aes(x = month, y = dest, fill = dep_delay)) +
+      geom_tile() +
+      scale_fill_viridis() +
+      labs(x = "Month", y = "Destination", fill = "Departure Delay")
+    ```
+
 
 3. Why is it slightly better to use aes(x = color, y = cut) rather than aes(x = cut, y = color) in the example above?
 
