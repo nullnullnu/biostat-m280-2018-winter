@@ -126,6 +126,44 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
 
 2. What variable in the diamonds dataset is most important for predicting the price of a diamond? How is that variable correlated with cut? Why does the combination of those two relationships lead to lower quality diamonds being more expensive?
 
+    It seems that carat is the most important variable for predicting the price of a diamond.
+    
+    It looks like the better the cut is, the lower the carat is. 
+    
+    ```{r, echo=TRUE, eval=TRUE}
+    
+    ggplot(diamonds) + 
+      geom_point(aes(x = carat, y = price), alpha = 0.5)
+    
+    ggplot(diamonds) +
+      geom_boxplot(aes(x = cut, y = price), alpha = 0.5)
+    
+    ggplot(diamonds) +
+      geom_boxplot(aes(x = color, y = price), alpha = 0.5)
+    
+    ggplot(diamonds) +
+      geom_boxplot(aes(x = clarity, y = price), alpha = 0.5)
+    
+    ggplot(diamonds) +
+      geom_point(aes(x = depth, y = price), alpha = 0.5)
+    
+    ggplot(diamonds) +
+      geom_point(aes(x = table, y = price), alpha = 0.5)
+    
+    ggplot(diamonds) +
+      geom_point(aes(x = x, y = price), alpha = 0.5)
+    
+    ggplot(diamonds) +
+      geom_point(aes(x = y, y = price), alpha = 0.5)
+    
+    ggplot(diamonds) +
+      geom_point(aes(x = z, y = price), alpha = 0.5)
+    
+    ggplot(diamonds) +
+      geom_boxplot(aes(x = cut, y = carat))
+
+    ```
+
 3. Install the ggstance package, and create a horizontal boxplot. How does this compare to using coord_flip()?
 
 4. One problem with boxplots is that they were developed in an era of much smaller datasets and tend to display a prohibitively large number of “outlying values”. One approach to remedy this problem is the letter value plot. Install the lvplot package, and try using geom_lv() to display the distribution of price vs cut. What do you learn? How do you interpret the plots?
