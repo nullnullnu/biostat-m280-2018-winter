@@ -297,8 +297,8 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
       mutate(dest = fct_reorder(dest, dep_delay)) %>%
       ggplot(aes(x = month, y = dest, fill = dep_delay)) +
       geom_tile() +
-      scale_fill_viridis() +
-      labs(x = "Month", y = "Destination", fill = "Departure Delay")
+      labs(x = "Month", y = "Destination", fill = "Delay") +
+      scale_fill_distiller(palette = "Set1")
     diaplot
     ```
 
@@ -432,6 +432,16 @@ Redo HW1 Q2 using tidyverse.
     head mendel_snpdef.txt
     ```
     
+    I created the Mendel SNP definition file called 'mendel_snp.txt'.
+    ```{r, echo=TRUE, eval=TRUE}
+    nbim <- bim %>%
+      select(X2, X1, X4)
+    top <- c( "    2.40 = FILE FORMAT VERSION NUMBER.", 
+              "8348674  = NUMBER OF SNPS LISTED HERE.")
+    writeLines(top, "mendel_snp.txt", sep = "\n")
+    write_delim(nbim, "mendel_snp.txt", delim = ",", append = TRUE)
+    ```
+
     - Mendel's pedigree file is similar to the plink `fam` file but has format  
     `Family ID`, `Person ID`, `Father ID`, `Mother ID`, `Sex` coded as M or F, `Twin Status`  
     with each field separated by a comma. Write a Linux shell command to convert `merge-geno.fam` to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string `T2DG` from the IDs. First few lines of the Mendel pedigree should look like
@@ -439,4 +449,8 @@ Redo HW1 Q2 using tidyverse.
     head -20 mendel_ped.txt
     ```
 
-
+    I created a Mendel's pedigree file called mendel_ped.txt.
+    ```{r, echo=TRUE, eval=TRUE}
+    
+    ```
+    
