@@ -445,7 +445,6 @@ Redo HW1 Q2 using tidyverse.
 
     I created a Mendel's pedigree file called mendel_ped.txt.
     ```{r, echo=TRUE, eval=TRUE}
-    nfam <- fam %>%
-      mutate()
+    nfam <- mutate()
     ```
     
