@@ -386,9 +386,9 @@ Redo HW1 Q2 using tidyverse.
         install.packages("readr", repos = "http://cran.rstudio.com/")
     library(readr)
     bim <- read_tsv(file = "/home/m280-data/hw1/merge-geno.bim", 
-                    col_names = FALSE)
+                    col_names = c("chromosome", "snpid", "gd", "bp", "a1", "a2"))
     fam <- read_delim(file = "/home/m280-data/hw1/merge-geno.fam",
-                          delim = " ", col_names = FALSE)
+                          delim = " ", col_names = c("famid", "pid", "fid", "mid", "sex", "as"))
     count(fam)
     count(bim)
     ```
@@ -413,44 +413,39 @@ Redo HW1 Q2 using tidyverse.
     | 19         | 393615         |
     | 21         | 239352         |
     ```{r, echo=TRUE, eval=TRUE}
-    count(bim, X1)
+    count(bim, chromosome)
     ```
 
 3. MAP4 (microtubule-associated protein 4) is a gene on chromosome 3 spanning positions 47,892,180 bp -- 48,130,769 bp. How many SNPs are located within MAP4 gene?
 
     There are 894 SNPs located within MAP4 gene.
     ```{r, echo=TRUE, eval=TRUE}
-    count(bim, X1 == 3, X4 >= 47892180, X4 <= 48130769)
+    count(bim, chromosome == 3, bp >= 47892180, bp <= 48130769)
     ```
 
 4. Statistical geneticists often have to reformat a data set to feed into various analysis programs. For example, to use the Mendel software <http://www.genetics.ucla.edu/software/mendel>, we have to reformat the data set to be read by Mendel.
 
       - Mendel's SNP definition file is similar to the plink `bim` file but has format  
       `SNP ID`, `Chromosome`, `Base Pair Position`  
-      with each field separated by a comma. Write a Linux shell command to convert `merge-geno.bim` to Mendel SNP definition file. The first few lines of the Mendel SNP definition file should look like
-    ```{bash, echo=FALSE, eval=TRUE}
-    head mendel_snpdef.txt
-    ```
+      with each field separated by a comma. Write a Linux shell command to convert `merge-geno.bim` to Mendel SNP definition file. 
     
     I created the Mendel SNP definition file called 'mendel_snp.txt'.
     ```{r, echo=TRUE, eval=TRUE}
     nbim <- bim %>%
-      select(X2, X1, X4)
+      select(snpid, chromosome, bp)
     top <- c( "    2.40 = FILE FORMAT VERSION NUMBER.", 
               "8348674  = NUMBER OF SNPS LISTED HERE.")
     writeLines(top, "mendel_snp.txt", sep = "\n")
     write_delim(nbim, "mendel_snp.txt", delim = ",", append = TRUE)
     ```
-
+    
     - Mendel's pedigree file is similar to the plink `fam` file but has format  
     `Family ID`, `Person ID`, `Father ID`, `Mother ID`, `Sex` coded as M or F, `Twin Status`  
-    with each field separated by a comma. Write a Linux shell command to convert `merge-geno.fam` to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string `T2DG` from the IDs. First few lines of the Mendel pedigree should look like
-    ```{bash, echo=FALSE, eval=TRUE}
-    head -20 mendel_ped.txt
-    ```
+    with each field separated by a comma. Write a Linux shell command to convert `merge-geno.fam` to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string `T2DG` from the IDs. 
 
     I created a Mendel's pedigree file called mendel_ped.txt.
     ```{r, echo=TRUE, eval=TRUE}
-    
+    nfam <- fam %>%
+      mutate()
     ```
     
