@@ -50,15 +50,16 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
     The distribution of the x is very similar to that of y. In my opinion, x should be the length and y should be the width since they are close but the value of x is larger (more to the right) than that of y. And z should be the depth.
     ```{r, echo=TRUE, eval=TRUE}
     ggplot(diamonds, aes(x = x), binwidth = 0.01) +
-      geom_freqpoly()
+      geom_freqpoly() +
+      xlim(c(0, 15))
     
     ggplot(diamonds, aes(x = y), binwidth = 0.01) +
       geom_freqpoly() +
-      coord_cartesian(xlim = c(0, 15))
+      xlim(c(0, 15))
     
     ggplot(diamonds, aes(x = z), binwidth = 0.01) +
       geom_freqpoly() +
-      coord_cartesian(xlim = c(0, 15))
+      xlim(c(0, 15))
     ```
 
 2. Explore the distribution of price. Do you discover anything unusual or surprising? (Hint: Carefully think about the binwidth and make sure you try a wide range of values.)
@@ -87,13 +88,12 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
     
     ggplot(diamonds, aes(x = carat), binwidth = 0.01) + 
       geom_histogram() + 
-      geom_freqpoly() +
       xlim(c(0, 3))
     ```
 
 4. Compare and contrast coord_cartesian() vs xlim() or ylim() when zooming in on a histogram. What happens if you leave binwidth unset? What happens if you try and zoom so only half a bar shows?
     
-    The function coord_cartesian() zooms in the area of xlim(). If I left binwidth unset the histogram does not change. 
+    The function coord_cartesian() zooms in the area of xlim(). The function xlim() also leaves the missing values blank. If I left binwidth unset the blanks of the missing values will be gone. 
     ```{r, echo=TRUE, eval=TRUE}
     ggplot(diamonds, aes(x = carat)) +
       geom_histogram() +
@@ -103,12 +103,12 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
       geom_histogram() +
       coord_cartesian(xlim = c(0.9, 1.1))
     
-    ggplot(diamonds, aes(x = carat), binwidth = 0.01) +
-      geom_histogram() +
+    ggplot(diamonds, aes(x = carat)) +
+      geom_histogram(binwidth = 0.01) +
       xlim(c(0.9, 1.1))
     
-    ggplot(diamonds, aes(x = carat), binwidth = 0.01) +
-      geom_histogram() +
+    ggplot(diamonds, aes(x = carat)) +
+      geom_histogram(binwidth = 0.01) +
       coord_cartesian(xlim = c(0.9, 1.1))
     ```
 
@@ -134,9 +134,8 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
 7.5.1.1 
 
 1. Use what you’ve learned to improve the visualisation of the departure times of cancelled vs. non-cancelled flights.
-   
-    I used what I have learned to improve the visualisation of the departure times of cancelled vs. non-cancelled flights.
-
+    
+    I improved the visualisation. 
     ```{r, echo=TRUE, eval=TRUE}
     flights %>% 
       mutate(cancelled = is.na(dep_time)) %>% 
@@ -151,37 +150,13 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
     
     It looks like the better the cut is, the lower the carat is. 
     
-    It might be because the better cut make the carat lower, resulting in a lower price. 
+    It might be because the better cut makes the carat lower, resulting in a lower price. 
     ```{r, echo=TRUE, eval=TRUE}
-    ggplot(diamonds) + 
-      geom_point(aes(x = carat, y = price), alpha = 0.5)
+    ggplot(diamonds, aes(x = carat, y = price)) + 
+      geom_point()
     
-    ggplot(diamonds) +
-      geom_boxplot(aes(x = cut, y = price), alpha = 0.5)
-    
-    ggplot(diamonds) +
-      geom_boxplot(aes(x = color, y = price), alpha = 0.5)
-    
-    ggplot(diamonds) +
-      geom_boxplot(aes(x = clarity, y = price), alpha = 0.5)
-    
-    ggplot(diamonds) +
-      geom_point(aes(x = depth, y = price), alpha = 0.5)
-    
-    ggplot(diamonds) +
-      geom_point(aes(x = table, y = price), alpha = 0.5)
-    
-    ggplot(diamonds) +
-      geom_point(aes(x = x, y = price), alpha = 0.5)
-    
-    ggplot(diamonds) +
-      geom_point(aes(x = y, y = price), alpha = 0.5)
-    
-    ggplot(diamonds) +
-      geom_point(aes(x = z, y = price), alpha = 0.5)
-    
-    ggplot(diamonds) +
-      geom_boxplot(aes(x = cut, y = carat))
+    ggplot(diamonds, aes(x = cut, y = carat)) +
+      geom_boxplot()
     ```
 
 3. Install the ggstance package, and create a horizontal boxplot. How does this compare to using coord_flip()?
@@ -195,7 +170,7 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
 
 4. One problem with boxplots is that they were developed in an era of much smaller datasets and tend to display a prohibitively large number of “outlying values”. One approach to remedy this problem is the letter value plot. Install the lvplot package, and try using geom_lv() to display the distribution of price vs cut. What do you learn? How do you interpret the plots?
 
-    The lvplot provides more information than boxplot. It shows many quantiles, which is more precise than the boxplot. As the price goes higher, the distribution of each cut decreases. 
+    The lvplot provides more information than boxplot. It shows many more quantiles, which is more precise than the boxplot especially when using large datasets. As the price goes higher, the distribution of each cut decreases. 
     ```{r, echo=TRUE, eval=TRUE}
     ggplot(diamonds, aes(x = cut, y = price)) +
       geom_lv()
@@ -231,6 +206,7 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
     ggplot(diamonds) +
       geom_freqpoly(aes(x = price, color = clarity))
     ```
+    Reference: http://varianceexplained.org/RData/code/code_lesson2/
 
 6. If you have a small dataset, it’s sometimes useful to use geom_jitter() to see the relationship between a continuous and categorical variable. The ggbeeswarm package provides a number of methods similar to geom_jitter(). List them and briefly describe what each one does.
 
@@ -300,7 +276,8 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
       scale_fill_distiller(palette = "Set1")
     diaplot
     ```
-
+    Reference: https://github.com/cimentadaj/R4DS-Solutions/blob/master/Ch5.Rmd
+    
 3. Why is it slightly better to use aes(x = color, y = cut) rather than aes(x = cut, y = color) in the example above?
 
     Because most of the time the categorical variable with fewer quantiles are on the x axis. 
@@ -322,7 +299,7 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
 
 1. Instead of summarising the conditional distribution with a boxplot, you could use a frequency polygon. What do you need to consider when using cut_width() vs cut_number()? How does that impact a visualisation of the 2d distribution of carat and price?
 
-    The function cut_width(x, width) divides x into bins of width. By default, boxplots look roughly the same (apart from number of outliers) regardless of how many observations there are, so it’s difficult to tell that each boxplot summarises a different number of points. The function cut_number() displays approximately the same number of points in each bin.
+    The function cut_width() divides x into bins of width. By default, boxplots look roughly the same regardless of how many observations there are, so it’s difficult to tell that each boxplot summarises a different number of points. The function cut_number() displays approximately the same number of points in each bin.
     ```{r, echo=TRUE, eval=TRUE}
     ggplot(data = diamonds, aes(x = price, colour = cut_width(carat, 0.4))) +
       geom_freqpoly()
@@ -334,21 +311,21 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
 2. Visualise the distribution of carat, partitioned by price.
 
     ```{r, echo=TRUE, eval=TRUE}
-    ggplot(diamonds, aes(x = cut_number(price, 5), y = carat)) +
+    ggplot(diamonds, aes(x = cut_number(price, 7), y = carat)) +
       geom_boxplot() +
       coord_flip() +
-      xlab("Price")
+      xlab("price")
     ```
 
 3. How does the price distribution of very large diamonds compare to small diamonds. Is it as you expect, or does it surprise you?
 
-    The prices of the large diamonds are more spread out. The large diamonds are more expensive than the small diamonds when looking at the median values. It is as I expected.
+    The prices of the large diamonds are more spread out (various). The large diamonds are more expensive than the small diamonds when looking at the median values. It is as I expected.
 
 4. Combine two of the techniques you’ve learned to visualise the combined distribution of cut, carat, and price.
 
     ```{r, echo=TRUE, eval=TRUE}
     diaplot <- diamonds %>%
-    ggplot(aes(cut_number(carat, 5), price)) +
+    ggplot(aes(x = cut_number(carat, 5), y = price)) +
     geom_boxplot(aes(fill = cut))
     diaplot
     ```
@@ -363,9 +340,9 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
 
 Why is a scatterplot a better display than a binned plot for this case?
 
-    Because the outliners are displayed clearly in a scatterplot. In the binnned plot, the outlines are not distinguishable.
-
-    ```{r, echo=TRUE,eval=TRUE}
+    Because the outliners were displayed clearly in a scatterplot. In the binnned plot, the outlines were not revealed.    
+    
+    ```{r, echo=TRUE, eval=TRUE}
     ggplot(data = diamonds) +
     geom_bin2d(mapping = aes(x = x, y = y)) +
     coord_cartesian(xlim = c(4, 11), ylim = c(4, 11))
@@ -414,14 +391,16 @@ Redo HW1 Q2 using tidyverse.
 
     There are 894 SNPs located within MAP4 gene.
     ```{r, echo=TRUE, eval=TRUE}
-    count(bim, chromosome == 3, bp >= 47892180, bp <= 48130769)
+    bim %>%
+    filter(chromosome == 3, bp >= 47892180, bp <= 48130769) %>%
+      count()
     ```
 
 4. Statistical geneticists often have to reformat a data set to feed into various analysis programs. For example, to use the Mendel software <http://www.genetics.ucla.edu/software/mendel>, we have to reformat the data set to be read by Mendel.
 
       - Mendel's SNP definition file is similar to the plink `bim` file but has format  
       `SNP ID`, `Chromosome`, `Base Pair Position`  
-      with each field separated by a comma. Use tidyverse to convert `merge-geno.bim` to Mendel SNP definition file. 
+      with each field separated by a comma. Use tidyverse to convert `merge-geno.bim` to Mendel SNP definition file.     
     
     I created the Mendel SNP definition file called 'mendel_snp.txt'.
     ```{r, echo=TRUE, eval=TRUE}
@@ -439,7 +418,7 @@ Redo HW1 Q2 using tidyverse.
     
     - Mendel's pedigree file is similar to the plink `fam` file but has format  
     `Family ID`, `Person ID`, `Father ID`, `Mother ID`, `Sex` coded as M or F, `Twin Status`  
-    with each field separated by a comma. Use tidyverse to convert `merge-geno.fam` to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string `T2DG` from the IDs. 
+    with each field separated by a comma. Use tidyverse to convert `merge-geno.fam` to Mendel pedigree file. Since twin status is not available in plink format, we put nothing for that field. Also Mendel limits Person ID to have length less than or equal to 8 characters, so we have to strip the string `T2DG` from the IDs.     
 
     I created a Mendel's pedigree file called mendel_ped.txt.
     ```{r, echo=TRUE, eval=TRUE}
@@ -452,7 +431,6 @@ Redo HW1 Q2 using tidyverse.
             ) %>%
     select(famid, npid, nfid, nmid, nsex, nas)
     write_delim(nfam, "mendel_ped.txt", na = "NA", delim = ",", col_names = FALSE, append = FALSE)
-    ?write_delim
     ```
     
     ```{bash}
