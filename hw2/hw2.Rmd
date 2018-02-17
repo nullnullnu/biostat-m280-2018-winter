@@ -23,6 +23,9 @@ library(nycflights13)
 if(!"ggbeeswarm" %in% rownames(installed.packages()))
         install.packages("ggbeeswarm", repos = "http://cran.rstudio.com/")
 library(ggbeeswarm)
+if(!"lvplot" %in% rownames(installed.packages()))
+        install.packages("lvplot", repos = "http://cran.rstudio.com/")
+library(lvplot)
 if(!"viridis" %in% rownames(installed.packages()))
       install.packages("viridis", repos = "http://cran.rstudio.com/")
 library(viridis)
@@ -206,6 +209,7 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
     ggplot(diamonds) +
       geom_freqpoly(aes(x = price, color = clarity))
     ```
+    
     Reference: http://varianceexplained.org/RData/code/code_lesson2/
 
 6. If you have a small dataset, it’s sometimes useful to use geom_jitter() to see the relationship between a continuous and categorical variable. The ggbeeswarm package provides a number of methods similar to geom_jitter(). List them and briefly describe what each one does.
@@ -276,6 +280,7 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
       scale_fill_distiller(palette = "Set1")
     diaplot
     ```
+    
     Reference: https://github.com/cimentadaj/R4DS-Solutions/blob/master/Ch5.Rmd
     
 3. Why is it slightly better to use aes(x = color, y = cut) rather than aes(x = cut, y = color) in the example above?
@@ -340,13 +345,13 @@ Read [Chapter 7](http://r4ds.had.co.nz/exploratory-data-analysis.html) (Explorat
 
 Why is a scatterplot a better display than a binned plot for this case?
 
-    Because the outliners were displayed clearly in a scatterplot. In the binnned plot, the outlines were not revealed.    
+Because the outliners were displayed clearly in a scatterplot. In the binnned plot, the outlines were not revealed.    
     
-    ```{r, echo=TRUE, eval=TRUE}
-    ggplot(data = diamonds) +
-    geom_bin2d(mapping = aes(x = x, y = y)) +
-    coord_cartesian(xlim = c(4, 11), ylim = c(4, 11))
-    ```
+```{r, echo=TRUE, eval=TRUE}
+ggplot(data = diamonds) +
+geom_bin2d(mapping = aes(x = x, y = y)) +
+coord_cartesian(xlim = c(4, 11), ylim = c(4, 11))
+```
 
 ## Q3
 
