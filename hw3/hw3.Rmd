@@ -14,6 +14,18 @@ The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching s
 
 1. For efficiency of the Shiny app, you should first pre-process, pare down, tidy, and save the data, e.g., as a compressed RDS file, to be used in the app.
 
+
+```{r}
+payroll <-read.csv(file = "/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv", header = TRUE)
+head(payroll)
+if(!"rio" %in% rownames(installed.packages()))
+        install.packages("rio", repos = "http://cran.rstudio.com/")
+library("rio")
+export(payroll, "LA_City_Employee_Payroll.rds" )
+convert("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv","LA_City_Employee_Payroll.rds")
+```
+
+
 0. **Total payroll by LA City**. Visualize the total LA City payroll of each year, with breakdown into base pay, overtime pay, and other pay.
 
 0. **Who earned most?** Visualize the payroll information (total payment with breakdown into base pay, overtime pay, and other pay, Department, Job Title) of the top $n$ highest paid LA City employees in a specific year. User specifies $n$ (default 10) and year (default 2017).
