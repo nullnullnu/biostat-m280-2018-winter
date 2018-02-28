@@ -14,44 +14,60 @@ The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching s
 
 1. For efficiency of the Shiny app, you should first pre-process, pare down, tidy, and save the data, e.g., as a compressed RDS file, to be used in the app.
 
+    I pre-process, pare down, tidy, and save the data as a compressed RDS file. 
+    ```{r}
+    if(!"rio" %in% rownames(installed.packages()))
+            install.packages("rio", repos = "http://cran.rstudio.com/")
+    library(rio)
+    library(tidyverse)
+    convert("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv",
+            "payroll.rds")
+    ```
 
-```{r}
-payroll <-read.csv(file = "/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv", header = TRUE)
-head(payroll)
-if(!"rio" %in% rownames(installed.packages()))
-        install.packages("rio", repos = "http://cran.rstudio.com/")
-library("rio")
-export(payroll, "LA_City_Employee_Payroll.rds" )
-convert("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv","LA_City_Employee_Payroll.rds")
-```
 
+2. **Total payroll by LA City**. Visualize the total LA City payroll of each year, with breakdown into base pay, overtime pay, and other pay.
 
-0. **Total payroll by LA City**. Visualize the total LA City payroll of each year, with breakdown into base pay, overtime pay, and other pay.
+3. **Who earned most?** Visualize the payroll information (total payment with breakdown into base pay, overtime pay, and other pay, Department, Job Title) of the top $n$ highest paid LA City employees in a specific year. User specifies $n$ (default 10) and year (default 2017).
 
-0. **Who earned most?** Visualize the payroll information (total payment with breakdown into base pay, overtime pay, and other pay, Department, Job Title) of the top $n$ highest paid LA City employees in a specific year. User specifies $n$ (default 10) and year (default 2017).
+4. **Which departments earn most?** Visualize the mean or median payroll, with breakdown into base pay, overtime pay, and other pay, of top $n$ earning departments. User specifies $n$ (default 5), year (default 2017), and method (mean or median, default median).
 
-0. **Which departments earn most?** Visualize the mean or median payroll, with breakdown into base pay, overtime pay, and other pay, of top $n$ earning departments. User specifies $n$ (default 5), year (default 2017), and method (mean or median, default median).
+5. **Which departments cost most?** Visualize the total payroll, with breakdown into base pay, overtime pay, and other pay, of top $n$ expensive departments. User specifies $n$ (default 5) and year (default 2017).
 
-0. **Which departments cost most?** Visualize the total payroll, with breakdown into base pay, overtime pay, and other pay, of top $n$ expensive departments. User specifies $n$ (default 5) and year (default 2017).
+6. Visualize any other information you are interested in.
 
-0. Visualize any other information you are interested in.
-
-0. Publish your Shiny app to <https://www.shinyapps.io> and share the link.
+7. Publish your Shiny app to <https://www.shinyapps.io> and share the link.
 
 ## Q2 LA City Parking War
 
 The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on teaching server contains information about parking tickets in LA City. It was downloaded from [LA Open Data Portal](https://data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np). Connect to the database and answer following questions using plots and summary statistics. In this exercise, you are **not** allowed to load whole data into memory. Use the _transform in database, plot in R_ strategy.
 
+    ```{r}
+    if(!"DBI" %in% rownames(installed.packages()))
+            install.packages("DBI", repos = "http://cran.rstudio.com/")
+    suppressMessages(library(DBI))
+    if(!"RSQLite" %in% rownames(installed.packages()))
+            install.packages("RSQLite", repos = "http://cran.rstudio.com/")
+    suppressMessages(library(RSQLite))
+    if(!"tidyverse" %in% rownames(installed.packages()))
+            install.packages("tidyversee", repos = "http://cran.rstudio.com/")
+    suppressMessages(library(tidyverse))
+    parking <- dbConnect(RSQLite::SQLite(), 
+               dbname = "home/m280-data/la_parking/LA_Parking_Citations.sqlite")
+    
+    ```
+
+
+
 1. How many tickets are in this data set? Which time period do these tickets span? Which years have most data?
 
-0. When (which hour, weekday, month day, and month) are you most likely to get a ticket and when are you least likely to get a ticket?
+2. When (which hour, weekday, month day, and month) are you most likely to get a ticket and when are you least likely to get a ticket?
 
-0. Which car makes received most citations?
+3. Which car makes received most citations?
 
-0. How many different colors of cars were ticketed? Which color attracted most tickets?
+4. How many different colors of cars were ticketed? Which color attracted most tickets?
 
-0. What are the most common ticket types?
+5. What are the most common ticket types?
 
-0. How much money was collected on parking tickets in 2015 and 2016?
+6. How much money was collected on parking tickets in 2015 and 2016?
 
-0. Visualize any other information you are interested in.
+7. Visualize any other information you are interested in.
