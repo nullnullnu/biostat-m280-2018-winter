@@ -95,20 +95,28 @@ The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on 
     ORDER BY COUNT(*) DESC
     ```
     
-    ```{r}
     
+    ```{r}
+    latix_sql %>%
+      filter(!is.na(Issue_Year)) %>%
+      group_by(Issue_Year) %>%
+      count() %>%
+      collect() %>%
+      ggplot(latix_sql, mapping = aes(x = Issue_Year, y = n)) +
+      geom_col()
     ```
     
 2. When (which hour, weekday, month day, and month) are you most likely to get a ticket and when are you least likely to get a ticket?
 
-```{sql connection=parking}
-    SELECT 
-      Issue_Hour,
-      COUNT(*)
-    FROM latix
-    GROUP BY Issue_Hour
-    ORDER BY COUNT(*)
-```
+    You are most likely to get a ticket at hour 12. You are least likely to get a ticket at hour 5.
+    ```{sql connection=parking}
+        SELECT 
+          Issue_Hour,
+          COUNT(*)
+        FROM latix
+        GROUP BY Issue_Hour
+        ORDER BY COUNT(*) ASC
+    ```
 
 ```{sql connection=parking}
     SELECT 
