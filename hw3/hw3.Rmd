@@ -86,16 +86,6 @@ The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on 
     ```
     
     The year 2015 has the most data.
-    ```{sql connection=parking}
-    SELECT
-    Issue_Year,
-    COUNT(*)
-    FROM latix
-    GROUP BY Issue_Year
-    ORDER BY COUNT(*) DESC
-    ```
-    
-    
     ```{r}
     latix_sql %>%
       filter(!is.na(Issue_Year)) %>%
@@ -103,47 +93,57 @@ The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on 
       count() %>%
       collect() %>%
       ggplot(latix_sql, mapping = aes(x = Issue_Year, y = n)) +
+      scale_x_continuous(breaks = c(2010:2017)) +
       geom_col()
     ```
     
 2. When (which hour, weekday, month day, and month) are you most likely to get a ticket and when are you least likely to get a ticket?
 
     You are most likely to get a ticket at hour 12. You are least likely to get a ticket at hour 5.
-    ```{sql connection=parking}
-        SELECT 
-          Issue_Hour,
-          COUNT(*)
-        FROM latix
-        GROUP BY Issue_Hour
-        ORDER BY COUNT(*) ASC
+    ```{r}
+    latix_sql %>%
+      filter(!is.na(Issue_Hour)) %>%
+      group_by(Issue_Hour) %>%
+      count() %>%
+      collect() %>%
+      ggplot(latix_sql, mapping = aes(x = Issue_Hour, y = n)) +
+          geom_col()
+    ```
+    
+    You are most likely to get a ticket on the 22nd. You are least likely to get a ticket on the 31st.
+    ```{r}
+    latix_sql %>%
+      filter(!is.na(Issue_Wday)) %>%
+      group_by(Issue_Wday) %>%
+      count() %>%
+      collect() %>%
+      ggplot(latix_sql, mapping = aes(x = Issue_Wday, y = n)) +
+          geom_col()
     ```
 
-```{sql connection=parking}
-    SELECT 
-      Issue_Wday,
-      COUNT(*)
-    FROM latix
-    GROUP BY Issue_Wday
-    ORDER BY COUNT(*) DESC
-```
+    You are most likely to get a ticket at Tuesday. You are least likely to get a ticket on Saturday.
+    ```{r}
+    latix_sql %>%
+      filter(!is.na(Issue_Day)) %>%
+      group_by(Issue_Day) %>%
+      count() %>%
+      collect() %>%
+      ggplot(latix_sql, mapping = aes(x = Issue_Day, y = n)) +
+      scale_x_continuous(breaks = c(1:31)) +
+          geom_col()
+    ```
 
-```{sql connection=parking}
-    SELECT 
-      Issue_Day,
-      COUNT(*)
-    FROM latix
-    GROUP BY Issue_Day
-    ORDER BY COUNT(*) DESC
-```
-
-```{sql connection=parking}
-    SELECT 
-      Issue_Month,
-      COUNT(*)
-    FROM latix
-    GROUP BY Issue_Month
-    ORDER BY COUNT(*) DESC
-```
+    You are most likely to get a ticket at March. You are least likely to get a ticket at December.
+    ```{r}
+    latix_sql %>%
+      filter(!is.na(Issue_Month)) %>%
+      group_by(Issue_Month) %>%
+      count() %>%
+      collect() %>%
+      ggplot(latix_sql, mapping = aes(x = Issue_Month, y = n)) +
+      scale_x_continuous(breaks = c(1:12)) +
+          geom_col()
+    ```
 
 3. Which car makes received most citations?
 
