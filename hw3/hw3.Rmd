@@ -161,6 +161,23 @@ The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on 
 
 4. How many different colors of cars were ticketed? Which color attracted most tickets?
 
+    There are 65 different colors of cars were ticketed.
+    ```{sql connection=parking}
+    SELECT COUNT(DISTINCT Color) FROM latix
+    ```
+
+    The color black attracked most tickets. 
+    ```{r}
+    latix_sql %>%
+      filter(!is.na(Color)) %>%
+      group_by(Color) %>%
+      summarise(num = n()) %>%
+      collect() %>%
+      top_n(5) %>%
+      ggplot(latix_sql, mapping = aes(x = Color, y = num)) +
+          geom_col()
+    ```
+
 5. What are the most common ticket types?
 
 6. How much money was collected on parking tickets in 2015 and 2016?
