@@ -147,6 +147,18 @@ The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on 
 
 3. Which car makes received most citations?
 
+    The toyota received most citations. 
+    ```{r}
+    latix_sql %>%
+      filter(!is.na(Make)) %>%
+      group_by(Make) %>%
+      summarise(num = n()) %>%
+      collect() %>%
+      top_n(5) %>%
+      ggplot(latix_sql, mapping = aes(x = Make, y = num)) +
+          geom_col()
+    ```
+
 4. How many different colors of cars were ticketed? Which color attracted most tickets?
 
 5. What are the most common ticket types?
