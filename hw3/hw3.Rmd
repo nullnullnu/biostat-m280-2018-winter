@@ -45,15 +45,21 @@ The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on 
     if(!"DBI" %in% rownames(installed.packages()))
             install.packages("DBI", repos = "http://cran.rstudio.com/")
     suppressMessages(library(DBI))
-    
     if(!"RSQLite" %in% rownames(installed.packages()))
             install.packages("RSQLite", repos = "http://cran.rstudio.com/")
     suppressMessages(library(RSQLite))
-    
+    if(!"dplyr" %in% rownames(installed.packages()))
+            install.packages("dplyr", repos = "http://cran.rstudio.com/")
+    suppressMessages(library(dplyr))
+    if(!"lubridate" %in% rownames(installed.packages()))
+            install.packages("lubridate", repos = "http://cran.rstudio.com/")
+    suppressMessages(library(lubridate))
     if(!"tidyverse" %in% rownames(installed.packages()))
             install.packages("tidyversee", repos = "http://cran.rstudio.com/")
     suppressMessages(library(tidyverse))
-    
+    if(!"sqldf" %in% rownames(installed.packages()))
+            install.packages("sqldf", repos = "http://cran.rstudio.com/")
+    suppressMessages(library(sqldf))
     parking <- dbConnect(RSQLite::SQLite(), 
       dbname = "/home/m280-data/la_parking/LA_Parking_Citations_Extra.sqlite")
     dbListTables(parking)
@@ -61,19 +67,54 @@ The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on 
     latix_sql
     ```
 
-
-
 1. How many tickets are in this data set? Which time period do these tickets span? Which years have most data?
 
     There are 4044338	tickets in the data set. 
     ```{sql connection=parking}
     SELECT COUNT(DISTINCT Ticket_number) FROM latix
-
-    SELECT * FROM latix
-    ORDER BY Issue_Year DESC, Issue_Month DESC, Issue_Day DESC, Issue_Hour DESC, Issue_Minute DESC; 
     ```
-
-
+    
+    The time period of these tickets is from 2010.01.01 01:00 to 2017.12.31.23:59. 
+    ```{sql connection=parking}
+    SELECT min(Issue_Year) FROM latix
+    ```
+    ```{sql connection=parking}
+    SELECT max(Issue_Year) FROM latix
+    ```
+    
+    ```{sql connection=parking}
+    SELECT min(Issue_Month) FROM latix
+    ```
+    ```{sql connection=parking}
+    SELECT max(Issue_Month) FROM latix
+    ```
+    
+    ```{sql connection=parking}
+    SELECT min(Issue_Day) FROM latix
+    ```
+    ```{sql connection=parking}
+    SELECT max(Issue_Day) FROM latix
+    ```
+    
+    ```{sql connection=parking}
+    SELECT min(Issue_Hour) FROM latix
+    ```
+    ```{sql connection=parking}
+    SELECT max(Issue_Hour) FROM latix
+    ```
+    
+    ```{sql connection=parking}
+    SELECT min(Issue_Minute) FROM latix
+    ```
+    ```{sql connection=parking}
+    SELECT max(Issue_Minute) FROM latix
+    ```
+    
+    ```{sql connection=parking}
+    SELECT *
+    FROM latix
+    ORDER BY Issue_Year ASC, Issue_Month ASC
+    ```
 2. When (which hour, weekday, month day, and month) are you most likely to get a ticket and when are you least likely to get a ticket?
 
 3. Which car makes received most citations?
