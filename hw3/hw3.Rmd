@@ -204,3 +204,17 @@ The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on 
     ```
 
 7. Visualize any other information you are interested in.
+
+    I am interested in which states of the plate attracted most tickets.
+    ```{r}
+    latix_sql %>%
+          filter(!is.na(RP_State_Plate)) %>%
+          group_by(RP_State_Plate) %>%
+          summarise(num = n()) %>%
+          collect() %>%
+          top_n(5) %>%
+          ggplot(latix_sql, mapping = aes(x = RP_State_Plate, y = num)) +
+              geom_col()
+    ```
+
+
