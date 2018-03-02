@@ -10,7 +10,7 @@ library(shiny)
 library(tidyverse)
 setwd(".")
 payroll_origin <- 
-  read_rds("/home/zhaokezk/Biostat-m280-2018-winter/hw3/payroll_origin.rds")
+  read_rds("/home/zhaokezk/Biostat-m280-2018-winter/hw3/Shiny/payroll_origin.rds")
 
 payroll_origin$totalpayments <- as.numeric(gsub("\\$", "", payroll_origin$"Total Payments"))
 payroll_origin$basepay <- as.numeric(gsub("\\$", "", payroll_origin$"Base Pay"))
@@ -47,14 +47,13 @@ ui <- fluidPage(
                 titlePanel("Q3 Title"),
                 sidebarLayout(
                   sidebarPanel(
-                    sliderInput(inputId = "year",
+                    selectInput(inputId = "year",
                                 label = "Select year:",
-                                min = 2013,
-                                max = 2017,
-                                value = 2017),
+                                choices = c(2013:2017),
+                                selected = 2017),
                     
                     sliderInput(inputId = "rank",
-                                 label = "Select rank of the highest paid LA City:",
+                                 label = "Select rank of the highest paid LA City employee:",
                                  min = 1,
                                  max = 10,
                                  value = 10)
@@ -66,7 +65,21 @@ ui <- fluidPage(
               ##################### Q4
               tabPanel(
                 "Which departments earn most?",
-                titlePanel("Q4 Title")
+                titlePanel("Q4 Title"),
+                sidebarLayout(
+                  sidebarPanel(
+                    selectInput(inputId = "year4",
+                                label = "Select year:",
+                                choices = c(2013:2017),
+                                selected = 2017),
+                    
+                    selectInput(inputId = "rank4",
+                                label = "Select rank of the highest earning department:",
+                                choices = c(1:5),
+                                selected = 5)
+                  ),
+                  mainPanel = tableOutput("Q4")
+                )
               ),
               
               #################### Q5
@@ -107,10 +120,11 @@ ui <- fluidPage(
     ################Q3
     output$Q3 <- renderTable({
       payroll %>%
-        select(totalpayments, base, overtime, other, dept, job, year) %>%
+        select(job, dept, totalpayments, base, overtime, other, year) %>%
         filter(year == input$year) %>%
         arrange(desc(totalpayments)) %>%
-        head(input$rank)
+        head(input$rank) 
+      
     })
   }
 
