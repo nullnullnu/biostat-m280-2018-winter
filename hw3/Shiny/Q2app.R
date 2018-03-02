@@ -12,10 +12,14 @@ setwd(".")
 payroll_origin <- 
   read_rds("/home/zhaokezk/Biostat-m280-2018-winter/hw3/Shiny/payroll_origin.rds")
 
-payroll_origin$totalpayments <- as.numeric(gsub("\\$", "", payroll_origin$"Total Payments"))
-payroll_origin$basepay <- as.numeric(gsub("\\$", "", payroll_origin$"Base Pay"))
-payroll_origin$overtimepay <- as.numeric(gsub("\\$", "", payroll_origin$"Overtime Pay"))
-payroll_origin$otherpay <- as.numeric(gsub("\\$", "", payroll_origin$"Other Pay (Payroll Explorer)"))
+payroll_origin$totalpayments <- 
+  as.numeric(gsub("\\$", "", payroll_origin$"Total Payments"))
+payroll_origin$basepay <- 
+  as.numeric(gsub("\\$", "", payroll_origin$"Base Pay"))
+payroll_origin$overtimepay <- 
+  as.numeric(gsub("\\$", "", payroll_origin$"Overtime Pay"))
+payroll_origin$otherpay <- 
+  as.numeric(gsub("\\$", "", payroll_origin$"Other Pay (Payroll Explorer)"))
 head(payroll_origin)
 
 payroll <- payroll_origin %>%
@@ -34,7 +38,8 @@ ui <- fluidPage(
                   sidebarPanel(
                     selectInput(inputId = "type",
                                 label = "Select payroll type:",
-                                choices = c("Base Pay", "Overtime Pay", "Other Pay"),
+                                choices = 
+                                  c("Base Pay", "Overtime Pay", "Other Pay"),
                                 selected = "Base Pay")
                   ),
                   mainPanel = plotOutput("Q2")
@@ -53,12 +58,13 @@ ui <- fluidPage(
                                 selected = 2017),
                     
                     sliderInput(inputId = "rank",
-                                 label = "Select rank of the highest paid LA City employee:",
+                                 label = "Select rank of 
+                                the highest paid LA City employee:",
                                  min = 1,
                                  max = 10,
                                  value = 10)
                   ),
-                  mainPanel = tableOutput("Q3")
+                  mainPanel = plotOutput("Q3")
                 )
                 ),
               
@@ -74,7 +80,8 @@ ui <- fluidPage(
                                 selected = 2017),
                     
                     selectInput(inputId = "rank4",
-                                label = "Select rank of the highest earning department:",
+                                label = "Select rank of 
+                                the highest earning department:",
                                 choices = c(1:5),
                                 selected = 5)
                   ),
