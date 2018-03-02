@@ -180,6 +180,27 @@ The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on 
 
 5. What are the most common ticket types?
 
+    NO PARK/STREET CLEAN, METER EXP, and PREFERENTIAL PARKING are the most common ticket types. 
+    ```{r}
+    latix_sql %>%
+      filter(!is.na(Violation_Description)) %>%
+      group_by(Violation_Description) %>%
+      summarise(num = n()) %>%
+      collect() %>%
+      top_n(3) %>%
+      ggplot(latix_sql, mapping = aes(x = Violation_Description, y = num)) +
+          geom_col()
+    ```
+    
 6. How much money was collected on parking tickets in 2015 and 2016?
+
+    151006794 dollors were collected on parking tickets in 2015. 123236136 dollors were collected for 2016. 
+    ```{sql connection=parking}
+    SELECT 
+    Issue_Year, SUM(Fine_amount)
+    FROM latix
+    GROUP BY Issue_Year
+    ORDER BY SUM(Fine_amount) DESC
+    ```
 
 7. Visualize any other information you are interested in.
