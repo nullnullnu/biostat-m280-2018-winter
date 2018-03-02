@@ -31,29 +31,33 @@ ui <- fluidPage(
    # Sidebar with a slider input for number of bins 
    sidebarLayout(
       sidebarPanel(
-         sliderInput("Year",
-                     "Year:",
-                     c(2013:2017))
+         
+        selectInput(inputId = "type",
+                    label = "Choose a payroll type:",
+                    choices = c("Base Pay", "Overtime Pay", "Other Pay"),
+                    selected = "Base Pay")
       ),
       
-      # Show a plot of the generated distribution
-      mainPanel(
-         plotOutput("distPlot")
-      )
+      # Main panel for displaying outputs ----
+      mainPanel(plotOutput("Q2"))
    )
 )
 
 # Define server logic required to draw a histogram
 server <- function(input, output) {
    
-   output$distPlot <- renderPlot({
-      # generate bins based on input$bins from ui.R
-      x    <- faithful[, 2] 
-      bins <- seq(min(x), max(x), length.out = input$bins + 1)
-      
-      # draw the histogram with the specified number of bins
-      hist(x, breaks = bins, col = 'darkgray', border = 'white')
-   })
+  output$Q2 <- renderPlot({
+    payroll$type <- switch(input$type,
+                           "Base Pay" = payroll$base,
+                           "Overtime Pay" = payroll$overtime,
+                           "Other Pay" = payroll$other)
+      payroll %>%
+        select(year, type) %>%
+        group_by(year) %>%
+        summarise(total = sum(type)) %>%
+        ggplot(mapping = aes(x = year, y = total)) +
+        geom_col()
+  })
 }
 
 # Run the application 
