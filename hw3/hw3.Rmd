@@ -21,11 +21,16 @@ The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching s
     library(rio)
     library(tidyverse)
     convert("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv",
-            "payroll.rds")
+            "payroll_origin.rds")
     ```
 
-
 2. **Total payroll by LA City**. Visualize the total LA City payroll of each year, with breakdown into base pay, overtime pay, and other pay.
+
+```{r}
+range(payroll$Year)
+```
+
+
 
 3. **Who earned most?** Visualize the payroll information (total payment with breakdown into base pay, overtime pay, and other pay, Department, Job Title) of the top $n$ highest paid LA City employees in a specific year. User specifies $n$ (default 10) and year (default 2017).
 
@@ -208,13 +213,13 @@ The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on 
     I am interested in which states of the plate attracted most tickets.
     ```{r}
     latix_sql %>%
-          filter(!is.na(RP_State_Plate)) %>%
-          group_by(RP_State_Plate) %>%
-          summarise(num = n()) %>%
-          collect() %>%
-          top_n(5) %>%
-          ggplot(latix_sql, mapping = aes(x = RP_State_Plate, y = num)) +
-              geom_col()
+      filter(!is.na(RP_State_Plate)) %>%
+      group_by(RP_State_Plate) %>%
+      summarise(num = n()) %>%
+      collect() %>%
+      top_n(5) %>%
+      ggplot(latix_sql, mapping = aes(x = RP_State_Plate, y = num)) +
+          geom_col()
     ```
 
 
