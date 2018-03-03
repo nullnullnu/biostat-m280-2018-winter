@@ -24,7 +24,24 @@ head(payroll_origin)
 
 payroll <- payroll_origin %>%
   select(year = "Year", base = basepay , totalpayments, overtime = overtimepay, 
-         other = otherpay, dept = "Department Title", job = "Job Class Title") 
+         other = otherpay, dept = "Department Title", job = "Job Class Title")
+
+# meanq4 <- payroll %>%
+#   group_by(dept, year) %>%
+#   summarise(meantot = mean(totalpayments, na.rm = TRUE),
+#             meanbase = mean(base, na.rm = TRUE),
+#             meanover = mean(overtime, na.rm = TRUE),
+#             meanother = mean(other, na.rm = TRUE)) %>%
+#   select(dept, year, meantot, meanbase, meanover, meanother)
+
+# medq4 <- payroll %>%
+#   group_by(dept, year) %>%
+#   summarise(medtot = median(totalpayments, na.rm = TRUE),
+#             medbase = median(base, na.rm = TRUE),
+#             medover = median(overtime, na.rm = TRUE),
+#             medother = median(other, na.rm = TRUE)) %>%
+#   select(dept, year, medtot, medbase, medover, medother)
+
 
 ui <- fluidPage(
   
@@ -64,16 +81,21 @@ ui <- fluidPage(
                                  max = 10,
                                  value = 10)
                   ),
-                  mainPanel = plotOutput("Q3")
+                  mainPanel(tableOutput("Q3"))
                 )
                 ),
               
               ##################### Q4
               tabPanel(
-                "Which departments earn most?",
+                "Which departments earn the most?",
                 titlePanel("Q4 Title"),
                 sidebarLayout(
                   sidebarPanel(
+                    
+                    radioButtons(inputId = "button", 
+                                 label =  "Choose mean or median:",
+                                 c("mean", "median")),
+                    
                     selectInput(inputId = "year4",
                                 label = "Select year:",
                                 choices = c(2013:2017),
@@ -127,12 +149,41 @@ ui <- fluidPage(
     ################Q3
     output$Q3 <- renderTable({
       payroll %>%
-        select(job, dept, totalpayments, base, overtime, other, year) %>%
+        group_by(job) %>%
         filter(year == input$year) %>%
         arrange(desc(totalpayments)) %>%
-        head(input$rank) 
-      
+        head(input$rank) %>%
+        select(job, dept, totalpayments, base, overtime, other) 
     })
+    
+    ################04
+    output$Q4 <-renderTable({
+      if(input$button == "mean") {
+        meanq4 <- payroll %>%
+          filter(year == input$year4) %>%
+          group_by(dept) %>%
+          summarise(meantot = mean(totalpayments, na.rm = TRUE),
+                    meanbase = mean(base, na.rm = TRUE),
+                    meanover = mean(overtime, na.rm = TRUE),
+                    meanother = mean(other, na.rm = TRUE)) %>%
+          arrange(desc(meantot)) %>%
+          head(input$rank4) %>%
+          select(dept, meantot, meanbase, meanover, meanother)
+      } 
+      else {
+        medq4 <- payroll %>%
+          filter(year == input$year4) %>%
+          group_by(dept) %>%
+          summarise(medtot = median(totalpayments, na.rm = TRUE),
+                    medbase = median(base, na.rm = TRUE),
+                    medover = median(overtime, na.rm = TRUE),
+                    medother = median(other, na.rm = TRUE)) %>%
+          head(input$rank4) %>%
+          select(dept, medtot, medbase, medover, medother)
+      }
+        
+    })
+    
   }
 
 # Run the application 
