@@ -22,30 +22,15 @@ payroll_origin$otherpay <-
   as.numeric(gsub("\\$", "", payroll_origin$"Other Pay (Payroll Explorer)"))
 payroll_origin$cost <- 
   as.numeric(gsub("\\$", "", payroll_origin$"Average Benefit Cost"))
+payroll_origin$bonus <-
+  as.numeric(gsub("\\$", "", payroll_origin$"Permanent Bonus Pay"))
 head(payroll_origin)
 
 
 payroll <- payroll_origin %>%
   select(year = "Year", base = basepay , totalpayments, overtime = overtimepay, 
          other = otherpay, dept = "Department Title", 
-         job = "Job Class Title", cost)
-
-# meanq4 <- payroll %>%
-#   group_by(dept, year) %>%
-#   summarise(meantot = mean(totalpayments, na.rm = TRUE),
-#             meanbase = mean(base, na.rm = TRUE),
-#             meanover = mean(overtime, na.rm = TRUE),
-#             meanother = mean(other, na.rm = TRUE)) %>%
-#   select(dept, year, meantot, meanbase, meanover, meanother)
-
-# medq4 <- payroll %>%
-#   group_by(dept, year) %>%
-#   summarise(medtot = median(totalpayments, na.rm = TRUE),
-#             medbase = median(base, na.rm = TRUE),
-#             medover = median(overtime, na.rm = TRUE),
-#             medother = median(other, na.rm = TRUE)) %>%
-#   select(dept, year, medtot, medbase, medover, medother)
-
+         job = "Job Class Title", cost, bonus)
 
 ui <- fluidPage(
   
@@ -54,17 +39,8 @@ ui <- fluidPage(
               ##################### Q2 
               tabPanel(
                 "Total payroll by LA City", 
-                titlePanel("Q2 Title"),
-                sidebarLayout(
-                  sidebarPanel(
-                    selectInput(inputId = "type",
-                                label = "Select payroll type:",
-                                choices = 
-                                  c("Base Pay", "Overtime Pay", "Other Pay"),
-                                selected = "Base Pay")
-                  ),
-                  mainPanel = plotOutput("Q2")
-                )
+                titlePanel("Total payroll by LA City"),
+                mainPanel(plotOutput("Q2"))
               ),
               
               ##################### Q3
@@ -142,12 +118,28 @@ ui <- fluidPage(
               ),
               
               #################### Q6
-              tabPanel("Visualize other info",
-                       titlePanel("Q6 Title")
+              tabPanel("Which departments offer the highest permanent bonus pay?",
+                       titlePanel("Q6 Title"),
+                       sidebarLayout(
+                         sidebarPanel(
+                           selectInput(
+                             inputId = "year6",
+                             label = "Select year:",
+                             choices = c(2013:2017),
+                             selected = 2017),
+                           
+                           selectInput(inputId = "rank6",
+                                       label = "Select the rank:",
+                                       choices = c(1:5),
+                                       selected = 5),
+                           
+                           submitButton("Submit")
+                         ),
+                         mainPanel = tableOutput("Q6")
+                       )
               )
               )
   )
-
 
 
 ############### Define server
@@ -155,18 +147,20 @@ server <- function(input, output) {
   
   #############Q2
   output$Q2 <- renderPlot({
-    payroll$type <- switch(input$type, 
-                           "Base Pay" = payroll$base,
-                           "Overtime Pay" = payroll$overtime,
-                           "Other Pay" = payroll$other)
     payroll %>%
-      select(year, type) %>%
+      select(year, base, overtime, other) %>%
       group_by(year) %>%
-      summarise(total = sum(type, na.rm = TRUE)) %>%
-      ggplot(aes(x = year, y = total)) +
+      summarise(
+        totbase = sum(base, na.rm = TRUE),
+        totover = sum(overtime, na.rm = TRUE),
+        totother = sum(other, na.rm = TRUE)) %>%
+      gather(totbase, totover, totother, key = "paytype", value = "payamount") %>%
+      ggplot(mapping = aes(x = year, y = payamount, fill = paytype)) +
       geom_col() +
       scale_y_continuous(labels = scales::dollar_format("$")) +
-      labs(x = "Year", y = "Total Pay by LA City")
+      labs(x = "Year", y = "Total Pay by LA City") +
+      scale_fill_discrete(name = "Type of Pay",
+                          labels = c("Base Pay", "Other Pay", "Overtime Pay"))
   })
   
   
@@ -202,6 +196,7 @@ server <- function(input, output) {
                   medbase = median(base, na.rm = TRUE),
                   medover = median(overtime, na.rm = TRUE),
                   medother = median(other, na.rm = TRUE)) %>%
+        arrange(desc(medtot)) %>%
         head(input$rank4) %>%
         select(dept, medtot, medbase, medover, medother)
     }
@@ -212,9 +207,25 @@ server <- function(input, output) {
     payroll %>%
       filter(year == input$year5) %>%
       group_by(dept) %>%
-      arrange(desc(cost)) %>%
-      head(input$rank5) %>%
-      select(dept, cost, totalpayments, base, overtime, other) 
+      summarise(totcost = sum(cost, na.rm = TRUE),
+                totpay = sum(totalpayments, na.rm =TRUE),
+                totbase = sum(base, na.rm = TRUE),
+                totover = sum(overtime, na.rm = TRUE),
+                totother = sum(other, na.rm = TRUE)) %>%
+      arrange(desc(totcost)) %>%
+      select(dept, totcost, totpay, totbase, totover, totother) %>%
+      head(input$rank5)
+  })
+  
+  ###############Q6
+  output$Q6 <- renderTable({
+    payroll %>%
+      filter(year == input$year6) %>%
+      group_by(dept) %>%
+      summarise(totbonus = sum(bonus, na.rm = TRUE)) %>%
+      arrange(desc(totbonus)) %>%
+      head(input$rank6) %>%
+      select("Department" = dept, "Bonus Pay" = totbonus)
   })
   
 }
