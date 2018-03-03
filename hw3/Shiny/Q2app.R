@@ -8,29 +8,6 @@
 #
 library(shiny)
 library(tidyverse)
-setwd(".")
-payroll_origin <- 
-read_rds("/home/zhaokezk/Biostat-m280-2018-winter/hw3/Shiny/payroll_origin.rds")
-
-payroll_origin$totalpayments <- 
-  as.numeric(gsub("\\$", "", payroll_origin$"Total Payments"))
-payroll_origin$basepay <- 
-  as.numeric(gsub("\\$", "", payroll_origin$"Base Pay"))
-payroll_origin$overtimepay <- 
-  as.numeric(gsub("\\$", "", payroll_origin$"Overtime Pay"))
-payroll_origin$otherpay <- 
-  as.numeric(gsub("\\$", "", payroll_origin$"Other Pay (Payroll Explorer)"))
-payroll_origin$cost <- 
-  as.numeric(gsub("\\$", "", payroll_origin$"Average Benefit Cost"))
-payroll_origin$bonus <-
-  as.numeric(gsub("\\$", "", payroll_origin$"Permanent Bonus Pay"))
-head(payroll_origin)
-
-
-payroll <- payroll_origin %>%
-  select(year = "Year", base = basepay , totalpayments, overtime = overtimepay, 
-         other = otherpay, dept = "Department Title", 
-         job = "Job Class Title", cost, bonus)
 
 ui <- fluidPage(
   
@@ -39,14 +16,14 @@ ui <- fluidPage(
               ##################### Q2 
               tabPanel(
                 "Total payroll by LA City", 
-                titlePanel("Total payroll by LA City"),
+                titlePanel("Different types of pay in each year"),
                 mainPanel(plotOutput("Q2"))
               ),
               
               ##################### Q3
               tabPanel(
                 "Who earned the most?",
-                titlePanel("Q3 Title"),
+                titlePanel("Top paid LA City employees by year"),
                 sidebarLayout(
                   sidebarPanel(
                     selectInput(inputId = "year3",
@@ -55,8 +32,7 @@ ui <- fluidPage(
                                 selected = 2017),
                     
                     selectInput(inputId = "rank3",
-                                label = "Select rank of 
-                                the highest paid LA City employee:",
+                                label = "Select rank:",
                                 choices = c(1:10),
                                 selected = 10),
                     
@@ -69,10 +45,9 @@ ui <- fluidPage(
               ##################### Q4
               tabPanel(
                 "Which departments earn the most?",
-                titlePanel("Q4 Title"),
+                titlePanel("Top earning departments"),
                 sidebarLayout(
                   sidebarPanel(
-                    
                     radioButtons(inputId = "button", 
                                  label =  "Choose mean or median:",
                                  c("mean", "median")),
@@ -83,8 +58,7 @@ ui <- fluidPage(
                                 selected = 2017),
                     
                     selectInput(inputId = "rank4",
-                                label = "Select rank of 
-                                the highest earning department:",
+                                label = "Select rank:",
                                 choices = c(1:5),
                                 selected = 5),
                     
@@ -97,7 +71,7 @@ ui <- fluidPage(
               #################### Q5
               tabPanel(
                 "Which departments cost most?",
-                titlePanel("Q5 Title"),
+                titlePanel("Top expensive departments"),
                 sidebarLayout(
                   sidebarPanel(
                     selectInput(inputId = "year5",
@@ -106,8 +80,7 @@ ui <- fluidPage(
                                 selected = 2017),
                     
                     selectInput(inputId = "rank5",
-                                label = "Select rank of 
-                                the departments that cost the most:",
+                                label = "Select rank:",
                                 choices = c(1:5),
                                 selected = 5),
                     
@@ -118,8 +91,8 @@ ui <- fluidPage(
               ),
               
               #################### Q6
-              tabPanel("Which departments offer the highest permanent bonus pay?",
-                       titlePanel("Q6 Title"),
+              tabPanel("Which departments offer the highest bonus pay?",
+                       titlePanel("Departments with the top bonus pay"),
                        sidebarLayout(
                          sidebarPanel(
                            selectInput(
@@ -129,7 +102,7 @@ ui <- fluidPage(
                              selected = 2017),
                            
                            selectInput(inputId = "rank6",
-                                       label = "Select the rank:",
+                                       label = "Select rank:",
                                        choices = c(1:5),
                                        selected = 5),
                            
@@ -145,6 +118,29 @@ ui <- fluidPage(
 ############### Define server
 server <- function(input, output) {
   
+  ##########read in data and tidy
+  convert("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv",
+          "payroll_origin.rds")
+  payroll_origin <- read_rds("payroll_origin.rds")
+  payroll_origin$totalpayments <- 
+    as.numeric(gsub("\\$", "", payroll_origin$"Total Payments"))
+  payroll_origin$basepay <- 
+    as.numeric(gsub("\\$", "", payroll_origin$"Base Pay"))
+  payroll_origin$overtimepay <- 
+    as.numeric(gsub("\\$", "", payroll_origin$"Overtime Pay"))
+  payroll_origin$otherpay <- 
+    as.numeric(gsub("\\$", "", payroll_origin$"Other Pay (Payroll Explorer)"))
+  payroll_origin$cost <- 
+    as.numeric(gsub("\\$", "", payroll_origin$"Average Benefit Cost"))
+  payroll_origin$bonus <-
+    as.numeric(gsub("\\$", "", payroll_origin$"Permanent Bonus Pay"))
+  head(payroll_origin)
+  
+  payroll <- payroll_origin %>%
+    select(year = "Year", base = basepay , totalpayments, 
+           overtime = overtimepay, other = otherpay, dept = "Department Title", 
+           job = "Job Class Title", cost, bonus)
+  
   #############Q2
   output$Q2 <- renderPlot({
     payroll %>%
@@ -154,7 +150,8 @@ server <- function(input, output) {
         totbase = sum(base, na.rm = TRUE),
         totover = sum(overtime, na.rm = TRUE),
         totother = sum(other, na.rm = TRUE)) %>%
-      gather(totbase, totover, totother, key = "paytype", value = "payamount") %>%
+      gather(totbase, totover, totother, 
+             key = "paytype", value = "payamount") %>%
       ggplot(mapping = aes(x = year, y = payamount, fill = paytype)) +
       geom_col() +
       scale_y_continuous(labels = scales::dollar_format("$")) +
@@ -227,7 +224,6 @@ server <- function(input, output) {
       head(input$rank6) %>%
       select("Department" = dept, "Bonus Pay" = totbonus)
   })
-  
 }
 
 # Run the application 
