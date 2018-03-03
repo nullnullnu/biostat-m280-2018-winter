@@ -157,7 +157,7 @@ server <- function(input, output) {
       scale_y_continuous(labels = scales::dollar_format("$")) +
       labs(x = "Year", y = "Total Pay by LA City") +
       scale_fill_discrete(name = "Type of Pay",
-                          labels = c("Base Pay", "Other Pay", "Overtime Pay"))
+                          labels = c("Base Pay ($)", "Other Pay ($)", "Overtime Pay ($)"))
   })
   
   
@@ -168,7 +168,9 @@ server <- function(input, output) {
       filter(year == input$year3) %>%
       arrange(desc(totalpayments)) %>%
       head(input$rank3) %>%
-      select(job, dept, totalpayments, base, overtime, other) 
+      select("Job Type" = job, "Department" = dept, 
+             "Total Payments ($)" = totalpayments, "Base Pay ($)" = base, 
+             "Overtime Pay ($)" = overtime, "Other Pay ($)" = other) 
   })
   
   ################04
@@ -183,7 +185,9 @@ server <- function(input, output) {
                   meanother = mean(other, na.rm = TRUE)) %>%
         arrange(desc(meantot)) %>%
         head(input$rank4) %>%
-        select(dept, meantot, meanbase, meanover, meanother)
+        select("Department" = dept, "Mean Total Payments ($)" = meantot, 
+               "Mean Base Pay ($)" = meanbase, "Mean Overtime Pay ($)" = meanover, 
+               "Mean Other Pay ($)" = meanother)
     } 
     else {
       medq4 <- payroll %>%
@@ -195,7 +199,9 @@ server <- function(input, output) {
                   medother = median(other, na.rm = TRUE)) %>%
         arrange(desc(medtot)) %>%
         head(input$rank4) %>%
-        select(dept, medtot, medbase, medover, medother)
+        select("Department" = dept, "Median Total Payments ($)" = medtot, 
+               "Median Base Pay ($)" = medbase, "Median Overtime Pay ($)" = medover, 
+               "Median Other Pay ($)" = medother)
     }
   })
   
@@ -205,12 +211,14 @@ server <- function(input, output) {
       filter(year == input$year5) %>%
       group_by(dept) %>%
       summarise(totcost = sum(cost, na.rm = TRUE),
-                totpay = sum(totalpayments, na.rm =TRUE),
+                totpay = sum(totalpayments, na.rm = TRUE),
                 totbase = sum(base, na.rm = TRUE),
                 totover = sum(overtime, na.rm = TRUE),
                 totother = sum(other, na.rm = TRUE)) %>%
       arrange(desc(totcost)) %>%
-      select(dept, totcost, totpay, totbase, totover, totother) %>%
+      select("Department" = dept, "Total Cost ($)" = totcost, 
+             "Total Payments ($)" = totpay, "Total Base Pay ($)" = totbase, 
+             "Total Overtime Pay ($)" = totover, "Total Other Pay ($)" = totother) %>%
       head(input$rank5)
   })
   
@@ -222,7 +230,7 @@ server <- function(input, output) {
       summarise(totbonus = sum(bonus, na.rm = TRUE)) %>%
       arrange(desc(totbonus)) %>%
       head(input$rank6) %>%
-      select("Department" = dept, "Bonus Pay" = totbonus)
+      select("Department" = dept, "Bonus Pay ($)" = totbonus)
   })
 }
 
