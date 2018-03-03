@@ -37,9 +37,10 @@ The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching s
 
     I pre-process, pare down, tidy, and save the data as a compressed RDS file. 
     ```{r}
-    convert("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv",
-            "payroll_origin.rds")
+    LA <- read_csv("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv")
+    saveRDS(LA, "payroll_origin.rds", compress = TRUE)
     payroll_origin <- read_rds("payroll_origin.rds")
+    
     payroll_origin$totalpayments <- 
     as.numeric(gsub("\\$", "", payroll_origin$"Total Payments"))
     payroll_origin$basepay <- 
@@ -65,7 +66,9 @@ The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching s
 
 6. Visualize any other information you are interested in.
 
-7. Publish your Shiny app to <https://www.shinyapps.io> and share the link.
+7. Publish your Shiny app to <https://www.shinyapps.io> and share the link.  
+
+*This is the link to my shiny app, https://nullnullnu.shinyapps.io/shiny/.*
 
 ## Q2 LA City Parking War
 
