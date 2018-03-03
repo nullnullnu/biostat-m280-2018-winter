@@ -39,6 +39,20 @@ The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching s
     ```{r}
     convert("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv",
             "payroll_origin.rds")
+    payroll_origin <- read_rds("payroll_origin.rds")
+    payroll_origin$totalpayments <- 
+    as.numeric(gsub("\\$", "", payroll_origin$"Total Payments"))
+    payroll_origin$basepay <- 
+    as.numeric(gsub("\\$", "", payroll_origin$"Base Pay"))
+    payroll_origin$overtimepay <- 
+    as.numeric(gsub("\\$", "", payroll_origin$"Overtime Pay"))
+    payroll_origin$otherpay <- 
+    as.numeric(gsub("\\$", "", payroll_origin$"Other Pay (Payroll Explorer)"))
+    payroll_origin$cost <- 
+    as.numeric(gsub("\\$", "", payroll_origin$"Average Benefit Cost"))
+    payroll_origin$bonus <-
+    as.numeric(gsub("\\$", "", payroll_origin$"Permanent Bonus Pay"))
+    head(payroll_origin)
     ```
 
 2. **Total payroll by LA City**. Visualize the total LA City payroll of each year, with breakdown into base pay, overtime pay, and other pay.
