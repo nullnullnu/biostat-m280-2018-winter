@@ -144,11 +144,102 @@ $(document).ready(function () {
 ## rare. If reporting to datatable-help, please rerun and include the output
 ## from verbose=TRUE.</code></pre>
 <pre><code>## 
-Read 20.2% of 297293 rows
+Read 16.8% of 297293 rows
 Read 37.0% of 297293 rows
 Read 57.2% of 297293 rows
 Read 84.1% of 297293 rows
-Read 297293 rows and 35 (of 35) columns from 0.092 GB file in 00:00:08</code></pre></li>
+Read 297293 rows and 35 (of 35) columns from 0.092 GB file in 00:00:09</code></pre>
+<pre class="r"><code>payroll_origin &lt;- read_rds(&quot;payroll_origin.rds&quot;)
+payroll_origin$totalpayments &lt;- 
+as.numeric(gsub(&quot;\\$&quot;, &quot;&quot;, payroll_origin$&quot;Total Payments&quot;))
+payroll_origin$basepay &lt;- 
+as.numeric(gsub(&quot;\\$&quot;, &quot;&quot;, payroll_origin$&quot;Base Pay&quot;))
+payroll_origin$overtimepay &lt;- 
+as.numeric(gsub(&quot;\\$&quot;, &quot;&quot;, payroll_origin$&quot;Overtime Pay&quot;))
+payroll_origin$otherpay &lt;- 
+as.numeric(gsub(&quot;\\$&quot;, &quot;&quot;, payroll_origin$&quot;Other Pay (Payroll Explorer)&quot;))
+payroll_origin$cost &lt;- 
+as.numeric(gsub(&quot;\\$&quot;, &quot;&quot;, payroll_origin$&quot;Average Benefit Cost&quot;))
+payroll_origin$bonus &lt;-
+as.numeric(gsub(&quot;\\$&quot;, &quot;&quot;, payroll_origin$&quot;Permanent Bonus Pay&quot;))
+head(payroll_origin)</code></pre>
+<pre><code>##             Row ID Year Department Title Payroll Department Record Number
+## 1 3-1000027830ctFu 2013    Police (LAPD)               4301    1000027830
+## 2 3-1000155488ctFu 2013    Police (LAPD)               4302    1000155488
+## 3 3-1000194958ctFu 2013    Police (LAPD)               4301    1000194958
+## 4 3-1000198958ctFu 2013              Zoo               8701    1000198958
+## 5 3-1000232317ctFu 2013    Police (LAPD)               4301    1000232317
+## 6 3-1000329284ctFu 2013    Police (LAPD)               4302    1000329284
+##            Job Class Title Employment Type Hourly or Event Rate
+## 1      Police Detective II       Full Time               $53.16
+## 2             Clerk Typist       Full Time               $23.77
+## 3        Police Sergeant I       Full Time               $60.80
+## 4 Light Equipment Operator       Full Time               $30.23
+## 5      Police Lieutenant I       Full Time               $60.98
+## 6    Principal Storekeeper       Full Time               $45.06
+##   Projected Annual Salary Q1 Payments Q2 Payments Q3 Payments Q4 Payments
+## 1              $110998.08   $24931.20   $29181.61   $26545.80   $29605.30
+## 2               $49623.67   $11343.96   $13212.37   $11508.36   $13442.53
+## 3              $126950.40   $24184.00   $28327.20   $28744.20   $33224.88
+## 4               $63126.77   $15319.59   $17762.14   $15601.85   $18233.32
+## 5              $127326.24   $29391.20   $36591.20   $32904.81   $37234.03
+## 6               $94076.67   $20813.00   $24136.00   $21517.76   $25231.29
+##   Payments Over Base Pay % Over Base Pay Total Payments   Base Pay
+## 1               $4499.12           0.00%     $110263.91 $105764.79
+## 2               $1844.82           0.00%      $49507.22  $47662.40
+## 3              $13192.43           0.00%     $114480.28 $101287.85
+## 4               $5924.08           0.00%      $66916.90  $60992.82
+## 5              $18034.53           0.00%     $136121.24 $118086.71
+## 6               $1376.19           0.00%      $91698.05  $90321.86
+##   Permanent Bonus Pay Longevity Bonus Pay Temporary Bonus Pay Lump Sum Pay
+## 1            $3174.12               $0.00            $1325.00        $0.00
+## 2               $0.00            $1310.82               $0.00        $0.00
+## 3            $7363.95               $0.00            $1205.00     $2133.18
+## 4            $3446.79            $1677.29             $800.00        $0.00
+## 5            $7086.67               $0.00            $1325.00        $0.00
+## 6               $0.00            $1251.19             $125.00     $2068.80
+##   Overtime Pay Other Pay &amp; Adjustments Other Pay (Payroll Explorer) MOU
+## 1        $0.00                   $0.00                     $4499.12  24
+## 2        $0.00                 $534.00                     $1844.82   3
+## 3     $4424.32               $-1934.02                     $8768.11  24
+## 4        $0.00                   $0.00                     $5924.08   4
+## 5     $9839.33                $-216.47                     $8195.20  24
+## 6        $0.00               $-2068.80                     $1376.19  12
+##              MOU Title FMS Department Job Class Pay Grade
+## 1 POLICE OFFICERS UNIT             70      2223         2
+## 2        CLERICAL UNIT             70      1358         0
+## 3 POLICE OFFICERS UNIT             70      2227         1
+## 4  EQUIP.OPER. &amp; LABOR             87      3523         0
+## 5 POLICE OFFICERS UNIT             70      2232         1
+## 6     SUPV BLUE COLLAR             70      1839         0
+##   Average Health Cost Average Dental Cost Average Basic Life
+## 1           $11651.40             $898.08            $191.04
+## 2           $10710.24             $405.24             $11.40
+## 3           $11651.40             $898.08            $191.04
+## 4           $10710.24             $405.24             $11.40
+## 5           $11651.40             $898.08            $191.04
+## 6           $10710.24             $405.24             $11.40
+##   Average Benefit Cost Benefits Plan
+## 1            $12740.52        Police
+## 2            $11126.88          City
+## 3            $12740.52        Police
+## 4            $11126.88          City
+## 5            $12740.52        Police
+## 6            $11126.88          City
+##                            Job Class Link totalpayments   basepay
+## 1 http://per.lacity.org/perspecs/2223.pdf     110263.91 105764.79
+## 2 http://per.lacity.org/perspecs/1358.pdf      49507.22  47662.40
+## 3 http://per.lacity.org/perspecs/2227.pdf     114480.28 101287.85
+## 4 http://per.lacity.org/perspecs/3523.pdf      66916.90  60992.82
+## 5 http://per.lacity.org/perspecs/2232.pdf     136121.24 118086.71
+## 6 http://per.lacity.org/perspecs/1839.pdf      91698.05  90321.86
+##   overtimepay otherpay     cost   bonus
+## 1        0.00  4499.12 12740.52 3174.12
+## 2        0.00  1844.82 11126.88    0.00
+## 3     4424.32  8768.11 12740.52 7363.95
+## 4        0.00  5924.08 11126.88 3446.79
+## 5     9839.33  8195.20 12740.52 7086.67
+## 6        0.00  1376.19 11126.88    0.00</code></pre></li>
 <li><p><strong>Total payroll by LA City</strong>. Visualize the total LA City payroll of each year, with breakdown into base pay, overtime pay, and other pay.</p></li>
 <li><p><strong>Who earned most?</strong> Visualize the payroll information (total payment with breakdown into base pay, overtime pay, and other pay, Department, Job Title) of the top <span class="math inline">\(n\)</span> highest paid LA City employees in a specific year. User specifies <span class="math inline">\(n\)</span> (default 10) and year (default 2017).</p></li>
 <li><p><strong>Which departments earn most?</strong> Visualize the mean or median payroll, with breakdown into base pay, overtime pay, and other pay, of top <span class="math inline">\(n\)</span> earning departments. User specifies <span class="math inline">\(n\)</span> (default 5), year (default 2017), and method (mean or median, default median).</p></li>
