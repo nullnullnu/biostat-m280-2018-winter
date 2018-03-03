@@ -8,6 +8,27 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+```{r, echo=FALSE}
+if(!"rio" %in% rownames(installed.packages()))
+            install.packages("rio", repos = "http://cran.rstudio.com/")
+suppressMessages(library(rio))
+if(!"DBI" %in% rownames(installed.packages()))
+            install.packages("DBI", repos = "http://cran.rstudio.com/")
+suppressMessages(library(DBI))
+if(!"RSQLite" %in% rownames(installed.packages()))
+            install.packages("RSQLite", repos = "http://cran.rstudio.com/")
+suppressMessages(library(RSQLite))
+if(!"dplyr" %in% rownames(installed.packages()))
+            install.packages("dplyr", repos = "http://cran.rstudio.com/")
+suppressMessages(library(dplyr))
+if(!"lubridate" %in% rownames(installed.packages()))
+            install.packages("lubridate", repos = "http://cran.rstudio.com/")
+suppressMessages(library(lubridate))
+if(!"tidyverse" %in% rownames(installed.packages()))
+            install.packages("tidyversee", repos = "http://cran.rstudio.com/")
+suppressMessages(library(tidyverse))
+```
+
 ## Q1 LA City Employee Payroll
 
 The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching server contains payroll information of LA City employees in years 2013-2017. It was downloaded from [LA City Controller's Office](https://controllerdata.lacity.org/Payroll/City-Employee-Payroll/pazn-qyym). Make a Shiny app to facilitate exploratory data analysis. 
@@ -16,21 +37,11 @@ The `/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv` file on teaching s
 
     I pre-process, pare down, tidy, and save the data as a compressed RDS file. 
     ```{r}
-    if(!"rio" %in% rownames(installed.packages()))
-            install.packages("rio", repos = "http://cran.rstudio.com/")
-    library(rio)
-    library(tidyverse)
     convert("/home/m280-data/la_payroll/LA_City_Employee_Payroll.csv",
             "payroll_origin.rds")
     ```
 
 2. **Total payroll by LA City**. Visualize the total LA City payroll of each year, with breakdown into base pay, overtime pay, and other pay.
-
-```{r}
-range(payroll$Year)
-```
-
-
 
 3. **Who earned most?** Visualize the payroll information (total payment with breakdown into base pay, overtime pay, and other pay, Department, Job Title) of the top $n$ highest paid LA City employees in a specific year. User specifies $n$ (default 10) and year (default 2017).
 
@@ -47,26 +58,10 @@ range(payroll$Year)
 The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on teaching server contains information about parking tickets in LA City. It was downloaded from [LA Open Data Portal](https://data.lacity.org/A-Well-Run-City/Parking-Citations/wjz9-h9np). Connect to the database and answer following questions using plots and summary statistics. In this exercise, you are **not** allowed to load whole data into memory. Use the _transform in database, plot in R_ strategy.
 
     ```{r}
-    if(!"DBI" %in% rownames(installed.packages()))
-            install.packages("DBI", repos = "http://cran.rstudio.com/")
-    suppressMessages(library(DBI))
-    if(!"RSQLite" %in% rownames(installed.packages()))
-            install.packages("RSQLite", repos = "http://cran.rstudio.com/")
-    suppressMessages(library(RSQLite))
-    if(!"dplyr" %in% rownames(installed.packages()))
-            install.packages("dplyr", repos = "http://cran.rstudio.com/")
-    suppressMessages(library(dplyr))
-    if(!"lubridate" %in% rownames(installed.packages()))
-            install.packages("lubridate", repos = "http://cran.rstudio.com/")
-    suppressMessages(library(lubridate))
-    if(!"tidyverse" %in% rownames(installed.packages()))
-            install.packages("tidyversee", repos = "http://cran.rstudio.com/")
-    suppressMessages(library(tidyverse))
     parking <- dbConnect(RSQLite::SQLite(), 
       dbname = "/home/m280-data/la_parking/LA_Parking_Citations_Extra.sqlite")
     dbListTables(parking)
     latix_sql <- dplyr::tbl(parking, "latix")
-    latix_sql
     ```
 
 1. How many tickets are in this data set? Which time period do these tickets span? Which years have most data?
