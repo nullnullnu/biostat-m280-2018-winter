@@ -222,4 +222,8 @@ The SQLite database `/home/m280-data/la_parking/LA_Parking_Citations.sqlite` on 
           geom_col()
     ```
 
+    ```{r}
+    dbDisconnect(parking)
+    ```
+
 
