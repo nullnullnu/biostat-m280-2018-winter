@@ -21,6 +21,7 @@ library(dplyr)
 library(stringr)
 library(sparklyr)
 library(ggplot2)
+library(ggrepel)
 ```
 
 Our Apache Yarn cluster hosts the [flights](http://stat-computing.org/dataexpo/2009/the-data.html) data representing 123 million flights over 22 years. Read the [lecture notes](http://hua-zhou.github.io/teaching/biostatm280-2018winter/slides/12-sparklyr/sparklyr-flights.html) on how to access the Yarn cluster. Connect to the database using `sparklyr` and answer following questions. You can base your answers on a specific year or the whole data set.
@@ -47,8 +48,6 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
 
 
 ```{r}
-states <- map_data("state")
-
 d <- flights_tbl %>%
   count(dest, sort = TRUE) %>%
   select(dest = dest, ndest = n) %>%
@@ -63,17 +62,20 @@ o <- flights_tbl %>%
 
 do <- left_join(d, o, by = c("dest" = "origin")) %>%
   transmute(port = dest, n = ndest + norigin) %>%
-  collect
+  collect()
 
-busydo <- left_join(airports_tbl, do, by = c("faa" = "port"), copy = TRUE)
+states <- map_data("state")
 
-#busyp <- do %>%
-  #left_join(airports_tbl, by = c("port" = "faa"), copy = TRUE)
-  
+getloc <- airports_tbl %>%
+  transmute(faa, lat = as.numeric(lat), lon = as.numeric(lon)) %>%
+  filter(faa %in% do$port) %>%
+  collect() %>%
   ggplot() + 
   geom_polygon(data = states, aes(x = long, 
-    y = lat, fill = region, group = group), color = "white") + 
-  geom_point(data = bap, aes(x = long, y = lat), color = "yellow", size = 4) +
+    y = lat, fill = region, group = group), color = "white") +
+  geom_point(mapping = aes(x = lon, y = lat), 
+             color = "yellow", size = 4) +
+  geom_label_repel(aes(x = lon, y = lat, label = faa)) +
   coord_fixed(1.3) +
   guides(fill=FALSE) 
 ```
