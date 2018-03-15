@@ -46,42 +46,85 @@ flights_tbl %>% print(width = Inf)
 1. Map the top 10 busiest airports. Size of dots should reflect the number of flights through that destination.  
 Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io/rep-res-web/lectures/making-maps-with-R.html) helpful.
 
+    I mapped the top 10 busiest airports. 
+    ```{r}
+    d <- flights_tbl %>%
+      group_by(dest) %>%
+      summarise(num = n()) %>%
+      arrange(desc(num)) %>%
+      head(10) %>%
+      collect()
+      
+    o <- flights_tbl %>%
+      group_by(origin) %>%
+      summarise(num = n()) %>%
+      arrange(desc(num)) %>%
+      head(10) %>%
+      collect()
+    
+    do <- left_join(d, o, by = c("dest" = "origin")) %>%
+      transmute(port = dest, n = ndest + norigin) %>%
+      collect()
 
-```{r}
-d <- flights_tbl %>%
-  count(dest, sort = TRUE) %>%
-  select(dest = dest, ndest = n) %>%
-  head(10) %>%
-  collect() 
-
-o <- flights_tbl %>%
-  count(origin, sort = TRUE) %>%
-  select(origin = origin, norigin = n) %>%
-  head(10) %>%
-  collect() 
-
-do <- left_join(d, o, by = c("dest" = "origin")) %>%
-  transmute(port = dest, n = ndest + norigin) %>%
-  collect()
-
-states <- map_data("state")
-
-getloc <- airports_tbl %>%
-  transmute(faa, lat = as.numeric(lat), lon = as.numeric(lon)) %>%
-  filter(faa %in% do$port) %>%
-  collect() %>%
-  ggplot() + 
-  geom_polygon(data = states, aes(x = long, 
-    y = lat, fill = region, group = group), color = "white") +
-  geom_point(mapping = aes(x = lon, y = lat), 
-             color = "yellow", size = 4) +
-  geom_label_repel(aes(x = lon, y = lat, label = faa)) +
-  coord_fixed(1.3) +
-  guides(fill=FALSE) 
-```
-
+    states <- map_data("state")
+    
+    airports_tbl %>%
+      left_join(do, by = c("faa" = "port"), copy = TRUE) %>%
+      mutate(faa, lat = as.numeric(lat), lon = as.numeric(lon)) %>%
+      filter(faa %in% do$port) %>%
+      collect() %>%
+      ggplot() + 
+      geom_polygon(data = states, aes(x = long, 
+        y = lat, fill = region, group = group), color = "white") +
+      geom_point(mapping = aes(x = lon, y = lat, size = factor(n)), 
+                 color = "yellow") +
+      geom_label_repel(aes(x = lon, y = lat, label = faa)) +
+      coord_fixed(1.3) +
+      guides(fill=FALSE) 
+    ```
 
 2. Map the top 10 busiest direct routes. Size of lines should reflect the number of flights through that route.
+    
+    I mapped the top 10 busiest direct routes.
+    ```{r}
+    busyr <- flights_tbl %>%
+      group_by(origin, dest) %>%
+      summarise(num = n()) %>%
+      arrange(desc(num)) %>%
+      head(10) %>%
+      collect() 
+    
+    #mutate(faa, lat = as.numeric(lat), lon = as.numeric(lon)) %>%
+    
+    lorigin <- airports_tbl %>%
+      select(faa, lon, lat) %>%
+      filter(faa %in% busyr$origin) %>%
+      transmute(faa, olat = as.numeric(lat), olon = as.numeric(lon)) %>%
+      collect()
+    
+    ldest <- airports_tbl %>%
+      select(faa, lon, lat) %>%
+      filter(faa %in% busyr$dest) %>%
+      transmute(faa, dlat = as.numeric(lat), dlon = as.numeric(lon)) %>%
+      collect()
+    
+     busyr %>%
+      left_join(lorigin, by = c("origin" = "faa")) %>%
+      left_join(ldest, by = c("dest" = "faa")) %>%
+      collect() %>%
+      ggplot() + 
+      geom_polygon(data = usa, aes(x=long, y = lat, group = group), 
+                   fill = "pink", color = "pink") +
+      geom_point(aes(x = olon, y = olat), color = "red", size = 5) +
+      geom_point(aes(x = dlon, y = dlat), color = "white", size = 4) +
+      geom_curve(aes(x = olon, y = olat, xend = dlon, yend = dlat),
+                 arrow = arrow(angle = 15, length = unit(0.4,"cm"),
+                             type="closed"), 
+                 alpha = 0.5, curvature = 0.15) +
+      geom_label_repel(aes(x = olon, y = olat, label = origin)) + 
+      coord_fixed(1.3)
+    ```
+
 
 3. LAX:
   
