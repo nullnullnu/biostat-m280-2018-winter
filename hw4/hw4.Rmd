@@ -137,16 +137,9 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
     (a). Reproduce above plot. Visualize and explain some prominent features you observe. For example, what happened at points 1-5?
     
     ```{r}
-    # laxair <- flights_tbl %>%
-    #   filter(year >= 1998 & year <= 2008) %>%
-    #   filter(origin == "LAX" | dest == "LAX" &
-    #          !is.na(year) & !is.na(month) & !is.na(dayofmonth)) %>%
-    #   select(origin, dest, year, month, dayofmonth) %>%
-    #   collect()
-    # saveRDS(laxair, file = "laxair.rds")
-    
     laxairtr <- flights_tbl %>%
-      filter(year >= 1998 & year <= 2008) %>%
+      filter(year >= 1998 & year <= 2008) %>%  
+      #filter(date %in% c(ymd(19980101):ymd(20081231))) %>%
       filter(origin == "LAX" | dest == "LAX" &
              !is.na(year) & !is.na(month) & !is.na(dayofmonth) & 
                !is.na(dayofweek) & !is.na(arrdelay) & !is.na(depdelay) &
@@ -158,8 +151,7 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
     saveRDS(laxairtr, 
             file = "/home/zhaokezk/biostat-m280-2018-winter/hw4/laxairtr.rds")
       
-#filter(date %in% c(ymd(19980101):ymd(20081231))) %>%
-    
+    ########q3a data for plot
       q3a <- laxairtr %>%
       select(origin, dest, year, month, dayofmonth) %>%
       mutate(date = make_date(year, month, dayofmonth)) %>%
@@ -178,31 +170,42 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
         geom_label(aes(x = ymd(20071122), y = 1200, label = "4")) +
         geom_label(aes(x = ymd(20010101), y = 1200, label = "5"))
       p3a
+    ```
     
+    
+    ```{r}  
     ################zoom in 1
       p3a1 <- p3a +
         coord_fixed(xlim = (c(ymd(20010910), ymd(20010920))), ratio = 0.05) +
         ggtitle("Point 1. 20110911")
       p3a1
-      
+    ``` 
+    
+    ```{r}     
     ################zoom in 2      
       p3a2 <- p3a +
         coord_fixed(xlim = (c(ymd(20041122), ymd(20041130))), ratio = 0.05) +
         ggtitle("Point 2. 20041125")
       p3a2
-      
+    ```
+
+    ```{r}
     ################zoom in 3      
       p3a3 <- p3a +
         coord_fixed(xlim = (c(ymd(20040701), ymd(20040708))), ratio = 0.05) + 
         ggtitle("Point 3. 20040704")
       p3a3
-      
+    ```
+    
+    ```{r}
     ################zoom in 4      
       p3a4 <- p3a +
         coord_fixed(xlim = (c(ymd(20071119), ymd(20071128))), ratio = 0.05) +
         ggtitle("Point 4. 20071122")
       p3a4
-      
+    ```
+    
+    ```{r}
     ################zoom in 5      
       p3a5 <- p3a + 
         coord_fixed(xlim = (c(ymd(20001115), ymd(20010105))), ratio = 0.05) +
@@ -211,6 +214,28 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
     ```
     
     (b). Visualize and explain seasonal effects.
+    
+    ```{r}
+    laxairtr %>%
+      select(origin, dest, year, month, dayofmonth) %>%
+            mutate(season =
+               if_else(month %in% 9:11, "Fall",
+                       if_else(month %in% c(12, 1, 2), "Winter",
+                               if_else(month %in% 3:5, "Spring",
+                                       if_else(month %in% 6:8, "Summer", "")
+                                       )
+                               )
+                       )
+             ) %>%
+      group_by(year, season) %>%
+      summarise(n = n()) %>%
+      collect() %>%
+      ggplot() +
+      geom_col(aes(x = as.factor(year), y = n, fill = season),
+           position = "dodge") +
+      labs(x = "Year", y = "Number of Flights") + 
+      ggtitle("Seasonal Effects on the Number of Flights of LAX by Year")
+    ```
   
     (c). Visualize and explain weekly effects.
   
