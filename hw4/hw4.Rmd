@@ -157,38 +157,57 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
     
     saveRDS(laxairtr, 
             file = "/home/zhaokezk/biostat-m280-2018-winter/hw4/laxairtr.rds")
+      
+#filter(date %in% c(ymd(19980101):ymd(20081231))) %>%
     
-    q3a <- laxairtr %>%
+      q3a <- laxairtr %>%
       select(origin, dest, year, month, dayofmonth) %>%
       mutate(date = make_date(year, month, dayofmonth)) %>%
       collect()
     
-    p3a <- q3a %>%
-      group_by(date) %>%
-      count() %>%
-      ggplot() +
-      geom_line(aes(x = date, y = n)) +
-      ggtitle("LAX air traffic") +
-      xlab("date") + ylab("n")
+      p3a <- q3a %>%
+        group_by(date) %>%
+        count() %>%
+        ggplot() +
+        geom_line(aes(x = date, y = n)) +
+        ggtitle("LAX air traffic") +
+        xlab("date") + ylab("n") +
+        geom_label(aes(x = ymd(20010911), y = 1050, label = "1")) +
+        geom_label(aes(x = ymd(20041125), y = 960, label = "2")) +
+        geom_label(aes(x = ymd(20040704), y = 920, label = "3")) +
+        geom_label(aes(x = ymd(20071122), y = 1200, label = "4")) +
+        geom_label(aes(x = ymd(20010101), y = 1200, label = "5"))
+      p3a
+    
+    ################zoom in 1
+      p3a1 <- p3a +
+        coord_fixed(xlim = (c(ymd(20010910), ymd(20010920))), ratio = 0.05) +
+        ggtitle("Point 1. 20110911")
+      p3a1
       
+    ################zoom in 2      
+      p3a2 <- p3a +
+        coord_fixed(xlim = (c(ymd(20041122), ymd(20041130))), ratio = 0.05) +
+        ggtitle("Point 2. 20041125")
+      p3a2
       
-      # filter(origin == "LAX" | dest == "LAX" &
-      #        !is.na(year) & !is.na(month) & !is.na(dayofmonth)) %>%
-      # select(origin, dest, year, month, dayofmonth) %>%
-      # mutate(date = make_date(year, month, dayofmonth)) %>%
-      # filter(date >= ymd(19980101) & date <= ymd(20081231)) %>%
-      # collect() %>%
-      # group_by(date) %>%
-      # count() %>%
-      # ggplot(aes(x = date, y = n)) +
-      # geom_line() +
-      # ggtitle("LAX air traffic") +
-      # xlab("date") + ylab("n") +
-      # geom_label(aes(x = ymd(20010911), y = 1150, label = "1")) +
-      # geom_label(aes(x = ymd(20041127), y = 1000, label = "2")) +
-      # geom_label(aes(x = ymd(20040710), y = 1050, label = "3")) +
-      # geom_label(aes(x = ymd(20080103), y = 1230, label = "4")) +
-      # geom_label(aes(x = ymd(20010101), y = 1180, label = "5"))
+    ################zoom in 3      
+      p3a3 <- p3a +
+        coord_fixed(xlim = (c(ymd(20040701), ymd(20040708))), ratio = 0.05) + 
+        ggtitle("Point 3. 20040704")
+      p3a3
+      
+    ################zoom in 4      
+      p3a4 <- p3a +
+        coord_fixed(xlim = (c(ymd(20071119), ymd(20071128))), ratio = 0.05) +
+        ggtitle("Point 4. 20071122")
+      p3a4
+      
+    ################zoom in 5      
+      p3a5 <- p3a + 
+        coord_fixed(xlim = (c(ymd(20001115), ymd(20010105))), ratio = 0.05) +
+        ggtitle("Point 5. 20010101")
+      p3a5
     ```
     
     (b). Visualize and explain seasonal effects.
