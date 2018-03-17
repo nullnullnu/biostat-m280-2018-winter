@@ -322,7 +322,7 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
     
 4. Build a predictive model for the arrival delay (`arrdelay`) of flights flying from LAX. Use the same filtering criteria as in the [lecture notes](http://hua-zhou.github.io/teaching/biostatm280-2018winter/slides/12-sparklyr/sparklyr-flights.html) to construct training and validation sets. You are allowed to use a maximum of 5 predictors. The prediction performance of your model on the validation data set will be an important factor for grading this question.
 
-    ```{r}
+    ```{r, eval = FALSE}
     # want to fit a linear regression of arrdelay on distance, departure delay, and carriers using data from 2003-2007
     model_data <- flights_tbl %>%
     filter(!is.na(arrdelay) & !is.na(depdelay) & !is.na(distance)) %>%
