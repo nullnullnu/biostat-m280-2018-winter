@@ -243,6 +243,7 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
   
     (c). Visualize and explain weekly effects.
     
+    From 1998 to 2008, the number of flights was always the lowest on Saturday weekly. This may due to the fact that Saturday is not a weekday and fewer people travel on weekends for business. Besides, people tend to relax on Saturday. No matter what people do to relax, indoors or outdoors, the group of people who tend to choose somewhere that is so far away that they have to take a flight to get there may still be a minority. For those who travel outdoors on weekends, they usually go to somewhere within driving distance. In general, it seems that people travel the most on Monday, Wednesday and Friday, On Monday and Wednesday, people probably travel for work or on business. And people who travel on Friday may be on their way to enjoy for a good weekend since they do not want to waste their precious weekend time on the way.  
     ```{r}
     laxairtr %>%
       select(origin, dest, year, dayofweek) %>%
@@ -254,7 +255,10 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
            position = "dodge") +
       labs(x = "Year", y = "Number of Flights") + 
       ggtitle("Weekly Effects on the Number of Flights of LAX by Year") + 
-      scale_fill_brewer(palette="Set1")
+      scale_fill_brewer(name = "Day of Week", 
+                  labels = c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"),
+                  palette = "Set1")
+          #labs(fill = "Day of Week")
     ```
     
   
