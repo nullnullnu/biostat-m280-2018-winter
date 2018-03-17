@@ -215,6 +215,9 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
     
     (b). Visualize and explain seasonal effects.
     
+    Season definition: Spring runs from March to May; Summer runs from June to August; Fall runs from September to November; Winter runs from December to February. 
+    
+    From 1998 to 2008, the number of flights in Summer was always the highest among all four seasons, except in 1999, when the number of flights in Fall was the highest. In general, the number of flights in Winter is the lowest. Summer is the best travel season for students since they have a long summer break. For the Summer in 1999, one of highest temperatures ever recorded occurred in July (https://www.weather.gov/gsp/july_1999) that that might be one of the reasons that the number of flights in Summer was not the highest among all four seasons in 1999. Due to the cold weather, people do not travel that much during the winter. For students, the winter break is usually much shorter than the summer break so fewer students choose to travel in Winter. For Spring, even though the weather is pleasant, most people are busy with working or school so they do not get the chance to travel that much during spring. Therefore, the number of the flights in Spring is usually lower that that in Summer. 
     ```{r}
     laxairtr %>%
       select(origin, dest, year, month, dayofmonth) %>%
@@ -234,7 +237,8 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
       geom_col(aes(x = as.factor(year), y = n, fill = season),
            position = "dodge") +
       labs(x = "Year", y = "Number of Flights") + 
-      ggtitle("Seasonal Effects on the Number of Flights of LAX by Year")
+      ggtitle("Seasonal Effects on the Number of Flights of LAX by Year") + 
+      scale_fill_brewer(palette="Set3")
     ```
   
     (c). Visualize and explain weekly effects.
