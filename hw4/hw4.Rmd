@@ -242,6 +242,21 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
     ```
   
     (c). Visualize and explain weekly effects.
+    
+    ```{r}
+    laxairtr %>%
+      select(origin, dest, year, dayofweek) %>%
+      group_by(year, dayofweek) %>%
+      summarise(n = n()) %>%
+      collect() %>%
+      ggplot() +
+      geom_col(aes(x = as.factor(year), y = n, fill = as.factor(dayofweek)),
+           position = "dodge") +
+      labs(x = "Year", y = "Number of Flights") + 
+      ggtitle("Weekly Effects on the Number of Flights of LAX by Year") + 
+      scale_fill_brewer(palette="Set1")
+    ```
+    
   
     (d). Map top 10 destinations from LAX. Size of dots should reflect the number of flights from LAX to that destination.
     
