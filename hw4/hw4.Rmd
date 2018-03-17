@@ -258,11 +258,57 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
       scale_fill_brewer(name = "Day of Week", 
                   labels = c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"),
                   palette = "Set1")
-          #labs(fill = "Day of Week")
     ```
     
   
     (d). Map top 10 destinations from LAX. Size of dots should reflect the number of flights from LAX to that destination.
+    ```{r}
+    usa <- map_data("usa")
+    
+    topd <- laxairtr %>%
+      filter(origin == "LAX" & !is.na(dest)) %>%
+      select(origin, dest) %>%
+      group_by(origin, dest) %>%
+      summarise(n = n()) %>%
+      arrange(desc(n)) %>%
+      head(10) %>%
+      collect()
+
+    ld <- airports_tbl %>%
+      select(faa, lat, lon) %>%
+      left_join(topd, by = c("faa" = "dest"), copy = TRUE) %>%
+      filter(faa %in% topd$dest) %>%
+      transmute(n, dest = faa, 
+                ddlat = as.numeric(lat), ddlon = as.numeric(lon)) %>%
+      collect()
+    
+    lo <- airports_tbl %>%
+      select(faa, lat, lon) %>%
+      left_join(topd, by = c("faa" = "origin"), copy = TRUE) %>%
+      filter(faa %in% topd$origin) %>%
+      transmute(dest, origin = faa, 
+                oolat = as.numeric(lat), oolon = as.numeric(lon)) %>%
+      collect()
+    
+    ldo <- ld %>%
+      left_join(lo, by = c("dest" = "dest")) %>%
+      select(origin, dest, n, oolat, oolon, ddlat, ddlon) %>%
+      collect() 
+    
+    ldo %>%
+      ggplot() +
+      geom_polygon(data = usa, aes(x=long, y = lat, group = group), 
+                   fill = "pink", color = "pink") +
+      geom_point(aes(x = oolon, y = oolat), color = "purple", size = 5) +
+      geom_point(aes(x = ddlon, y = ddlat, size = factor(n)), color = "red") +
+      geom_curve(aes(x = oolon, y = oolat, xend = ddlon, yend = ddlat),
+                 arrow = arrow(angle = 15, length = unit(0.4,"cm"),
+                             type="closed"), 
+                 alpha = 0.5, curvature = 0.15) +
+      geom_label_repel(aes(x = ddlon, y = ddlat, label = dest)) + 
+      geom_label(aes(x = -118.408, y = 33.9425, label = "LAX")) +
+      coord_fixed(1.3)
+    ```
     
 4. Build a predictive model for the arrival delay (`arrdelay`) of flights flying from LAX. Use the same filtering criteria as in the [lecture notes](http://hua-zhou.github.io/teaching/biostatm280-2018winter/slides/12-sparklyr/sparklyr-flights.html) to construct training and validation sets. You are allowed to use a maximum of 5 predictors. The prediction performance of your model on the validation data set will be an important factor for grading this question.
     
