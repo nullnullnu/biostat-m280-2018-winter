@@ -14,7 +14,9 @@ if(!"mapdata" %in% rownames(installed.packages()))
             install.packages("mapdata", repos = "http://cran.rstudio.com/")
 if(!"lubridate" %in% rownames(installed.packages()))
             install.packages("lubridate", repos = "http://cran.rstudio.com/")
-devtools::install_github("dkahle/ggmap", force = TRUE)
+if(!"ggmap" %in% rownames(installed.packages()))
+            install.packages("ggmap", repos = "http://cran.rstudio.com/")
+#devtools::install_github("dkahle/ggmap", force = TRUE)
 library(ggmap)
 library(mapdata)
 library(maps)
@@ -30,7 +32,7 @@ library(lubridate)
 Our Apache Yarn cluster hosts the [flights](http://stat-computing.org/dataexpo/2009/the-data.html) data representing 123 million flights over 22 years. Read the [lecture notes](http://hua-zhou.github.io/teaching/biostatm280-2018winter/slides/12-sparklyr/sparklyr-flights.html) on how to access the Yarn cluster. Connect to the database using `sparklyr` and answer following questions. You can base your answers on a specific year or the whole data set.
 
 ```{r}
-Sys.setenv(SPARK_HOME="/usr/lib/spark")
+Sys.setenv(SPARK_HOME = "/usr/lib/spark")
 config <- spark_config()
 sc <- spark_connect(master = "local", config = config)
 
@@ -112,20 +114,22 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
       collect()
     
      busyr %>%
-      left_join(lorigin, by = c("origin" = "faa")) %>%
-      left_join(ldest, by = c("dest" = "faa")) %>%
-      collect() %>%
-      ggplot() + 
-      geom_polygon(data = usa, aes(x=long, y = lat, group = group), 
+       left_join(lorigin, by = c("origin" = "faa")) %>%
+       left_join(ldest, by = c("dest" = "faa")) %>%
+       mutate(line_scale = (num/max(num))^10) %>%
+       collect() %>%
+       ggplot() + 
+       geom_polygon(data = usa, aes(x=long, y = lat, group = group), 
                    fill = "pink", color = "pink") +
-      geom_point(aes(x = olon, y = olat), color = "red", size = 5) +
-      geom_point(aes(x = dlon, y = dlat), color = "white", size = 4) +
-      geom_curve(aes(x = olon, y = olat, xend = dlon, yend = dlat),
+       geom_point(aes(x = olon, y = olat), color = "red", size = 5) +
+       geom_point(aes(x = dlon, y = dlat), color = "white", size = 4) +
+       geom_curve(aes(x = olon, y = olat, xend = dlon, yend = dlat, 
+                      fill = line_scale),
                  arrow = arrow(angle = 15, length = unit(0.4,"cm"),
                              type="closed"), 
                  alpha = 0.5, curvature = 0.15) +
-      geom_label_repel(aes(x = olon, y = olat, label = origin)) + 
-      coord_fixed(1.3)
+       geom_label_repel(aes(x = olon, y = olat, label = origin)) + 
+       coord_fixed(1.3)
     ```
 
 3. LAX:
@@ -149,7 +153,8 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
       collect()
     
     saveRDS(laxairtr, 
-            file = "/home/zhaokezk/biostat-m280-2018-winter/hw4/laxairtr.rds")
+            file = "~/biostat-m280-2018-winter/hw4/laxairtr.rds")
+    laxairtr <- readRDS("~/biostat-m280-2018-winter/hw4/laxairtr.rds")
       
     ########q3a data for plot
       q3a <- laxairtr %>%
@@ -172,7 +177,7 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
       p3a
     ```
     
-    
+    There is a sudden drop at Point 1 on September 11, 2011, which is the date of the 9/11 attack. Four passenger airliners operated by two major U.S. passenger air carriers (United Airlines and American Airlines) - all of which departed from airports in the northeastern United States bound for California - were hijacked by 19 al-Qaeda terrorists. Two of the planes, American Airlines Flight 11 and United Airlines Flight 175, were crashed into the North and South towers, respectively, of the World Trade Center complex in New York City. The 9/11 attack caused huge negative effects on the airline industry and that's why there is a sudden drop on 9.11. 
     ```{r}  
     ################zoom in 1
       p3a1 <- p3a +
@@ -181,6 +186,7 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
       p3a1
     ``` 
     
+    There is a sudden drop at Point 2 on Nov 22, 2014, which is the Thanksgiving Day. People reunited with family on Thanksgiving and therefore they were already at their destination on this day. 
     ```{r}     
     ################zoom in 2      
       p3a2 <- p3a +
@@ -189,6 +195,7 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
       p3a2
     ```
 
+    There is a sudden drop at Point 3 on July 4, 2004, which is the Independence Day. People celebrated the special day instead of traveling to the destination. 
     ```{r}
     ################zoom in 3      
       p3a3 <- p3a +
@@ -197,6 +204,7 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
       p3a3
     ```
     
+    There is a sudden drop at Point 4 on the Nov 22, 2007, which is close to the Thanksgiving Day. Same as Point 2, people celebrated the holiday instead of traveling on this day. They were already at their destination on this day. 
     ```{r}
     ################zoom in 4      
       p3a4 <- p3a +
@@ -205,6 +213,7 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
       p3a4
     ```
     
+    There is a raise on Jan 1, 2000. This is probably because people started to fly back to their workplace or universities after the winter break of Christmas.
     ```{r}
     ################zoom in 5      
       p3a5 <- p3a + 
@@ -238,7 +247,7 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
            position = "dodge") +
       labs(x = "Year", y = "Number of Flights") + 
       ggtitle("Seasonal Effects on the Number of Flights of LAX by Year") + 
-      scale_fill_brewer(palette="Set3")
+      scale_fill_brewer(palette ="Set3")
     ```
   
     (c). Visualize and explain weekly effects.
@@ -260,8 +269,9 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
                   palette = "Set1")
     ```
     
-  
     (d). Map top 10 destinations from LAX. Size of dots should reflect the number of flights from LAX to that destination.
+    
+    I mapped top 10 destinations from LAX. 
     ```{r}
     usa <- map_data("usa")
     
@@ -297,22 +307,95 @@ Hint: You may find this tutorial on [Making Maps in R](http://eriqande.github.io
     
     ldo %>%
       ggplot() +
-      geom_polygon(data = usa, aes(x=long, y = lat, group = group), 
+      geom_polygon(data = usa, aes(x = long, y = lat, group = group), 
                    fill = "pink", color = "pink") +
       geom_point(aes(x = oolon, y = oolat), color = "purple", size = 5) +
       geom_point(aes(x = ddlon, y = ddlat, size = factor(n)), color = "red") +
       geom_curve(aes(x = oolon, y = oolat, xend = ddlon, yend = ddlat),
                  arrow = arrow(angle = 15, length = unit(0.4,"cm"),
-                             type="closed"), 
+                             type ="closed"), 
                  alpha = 0.5, curvature = 0.15) +
-      geom_label_repel(aes(x = ddlon, y = ddlat, label = dest)) + 
-      geom_label(aes(x = -118.408, y = 33.9425, label = "LAX")) +
+      geom_label_repel(aes(x = ddlon, y = ddlat, label = dest), size = 2) + 
+      geom_label(aes(x = -118.408, y = 33.9425, label = "LAX"), size = 2) +
       coord_fixed(1.3)
     ```
     
 4. Build a predictive model for the arrival delay (`arrdelay`) of flights flying from LAX. Use the same filtering criteria as in the [lecture notes](http://hua-zhou.github.io/teaching/biostatm280-2018winter/slides/12-sparklyr/sparklyr-flights.html) to construct training and validation sets. You are allowed to use a maximum of 5 predictors. The prediction performance of your model on the validation data set will be an important factor for grading this question.
+
+    ```{r}
+    # want to fit a linear regression of arrdelay on distance, departure delay, and carriers using data from 2003-2007
+    model_data <- flights_tbl %>%
+    filter(!is.na(arrdelay) & !is.na(depdelay) & !is.na(distance)) %>%
+    filter(depdelay > 15 & depdelay < 240) %>%
+    filter(arrdelay > -60 & arrdelay < 360) %>%
+    filter(year >= 2003 & year <= 2007) %>%
+    left_join(airlines_tbl, by = c("uniquecarrier" = "code"), copy = TRUE) %>%
+    select(year, month, arrdelay, depdelay, 
+           distance, uniquecarrier, description)
+    
+    # Summarize data by carrier
+    model_data %>%
+    group_by(uniquecarrier) %>%
+    summarize(description = min(description), arrdelay = mean(arrdelay), 
+              distance = mean(distance), depdelay = mean(depdelay)) %>%
+    select(description, arrdelay, distance, depdelay) %>%
+    arrange(arrdelay)
+
+    #################Train a linear model
+    #Partition the data into training and validation sets
+    model_partition <- model_data %>% 
+      sdf_partition(train = 0.8, valid = 0.2, seed = 5555)
+    
+    #fit a linear model
+     ml1 <- model_partition$train %>%
+       ml_linear_regression(arrdelay ~ distance + depdelay + uniquecarrier)
+     
+    #Summarize the linear model
+     summary(ml1)
+     
+    #Compare actual arrdelays to predicted arrdelays for an out of time sample.
+    data_2008 <- flights_tbl %>%
+      filter(!is.na(arrdelay) & !is.na(depdelay) & !is.na(distance)) %>%
+      filter(depdelay > 15 & depdelay < 240) %>%
+      filter(arrdelay > -60 & arrdelay < 360) %>%
+      filter(year == 2008) %>%
+      left_join(airlines_tbl, by = c("uniquecarrier" = "code")) %>%
+      select(year, month, arrdelay, depdelay, distance, uniquecarrier, 
+             description, origin, dest)
+    data_2008
+    
+    # Summarize data by carrier
+    carrier <- sdf_predict(ml1, data_2008) %>%
+      group_by(description) %>%
+      summarize(arrdelay = mean(arrdelay), prediction = mean(prediction), 
+                freq = n()) %>%
+      filter(freq > 10000) %>%
+      collect()
+    
+    carrier
+    
+    # Plot actual arrdelays and predicted arrdelays by airline carrier
+    ggplot(carrier, aes(arrdelay, prediction)) + 
+      geom_point(alpha = 0.75, color = 'red', shape = 3) +
+      geom_abline(intercept = 0, slope = 1, alpha = 0.15, color = 'blue') +
+      geom_text(aes(label = substr(description, 1, 20)), size = 3, 
+                alpha = 0.75, vjust = -1) +
+      labs(title='Average Arrdelays Forecast', x = 'Actual', y = 'Predicted')
+    ```
+
     
 5. Visualize and explain any other information you want to explore.
+
+    ```{r}
+    laxairtr %>%
+      select(dest, uniquecarrier) %>%
+      group_by(uniquecarrier) %>%
+      count() %>%
+      collect() %>%
+      ggplot() +
+      geom_col(aes(x = uniquecarrier, y = n)) +
+      ggtitle("Carriers of LAX from 1998 to 2008") 
+    ```
 
 
 ```{r}
